@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mullan Floor Mill — Order Sugar Powder Online</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F6F0E4;
+    --paper:#FBF8F1;
+    --molasses:#3E2A1C;
+    --caramel:#C1832E;
+    --caramel-dark:#9C6A22;
+    --ink:#2B2418;
+    --ink-soft:#6B6152;
+    --jute:#DCCBA5;
+    --line:#CBB98E;
+    --ok:#4C7A4A;
+    --wait:#B8862F;
+    --done:#3E2A1C;
+    --shadow: 0 1px 0 rgba(43,36,24,0.06);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Work Sans', sans-serif;
+    line-height:1.5;
+  }
+  h1,h2,h3{
+    font-family:'Zilla Slab', serif;
+    margin:0 0 .3em 0;
+    color:var(--molasses);
+    font-weight:700;
+  }
+  a{color:var(--caramel-dark);}
+  .wrap{max-width:900px;margin:0 auto;padding:0 20px;}
+
+  /* Top bar */
+  header.topbar{
+    background:var(--molasses);
+    color:var(--paper);
+    padding:22px 0 0 0;
+  }
+  .brand{display:flex;align-items:center;gap:16px;max-width:900px;margin:0 auto;padding:0 20px 18px 20px;}
+  .brand-mark{
+    width:56px;height:56px;flex:none;
+    border:2px solid var(--caramel);
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Zilla Slab',serif;font-weight:700;font-size:15px;letter-spacing:1px;
+    color:var(--caramel);
+  }
+  .brand h1{color:var(--paper);font-size:1.7rem;margin:0;}
+  .brand .tagline{color:var(--jute);margin:2px 0 0 0;font-size:.92rem;}
+  nav.tabs{
+    display:flex;
+    max-width:900px;margin:0 auto;
+    border-top:1px solid rgba(255,255,255,0.12);
+  }
+  nav.tabs .tab{
+    flex:1;
+    background:transparent;border:none;
+    color:var(--jute);
+    font-family:'Work Sans',sans-serif;
+    font-size:.95rem;font-weight:500;
+    padding:13px 10px;
+    cursor:pointer;
+    border-bottom:3px solid transparent;
+  }
+  nav.tabs .tab.active{
+    color:var(--paper);
+    border-bottom:3px solid var(--caramel);
+    background:rgba(255,255,255,0.04);
+  }
+
+  main{padding:28px 0 60px 0;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  /* Price ledger */
+  .price-ledger{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:16px 20px;
+    display:flex;gap:28px;flex-wrap:wrap;
+    margin-bottom:22px;
+  }
+  .price-ledger .item{min-width:140px;}
+  .price-ledger .item .label{font-size:.78rem;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;}
+  .price-ledger .item .value{font-family:'Zilla Slab',serif;font-size:1.5rem;color:var(--molasses);font-weight:700;}
+
+  /* Cards / forms */
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:24px;
+    margin-bottom:20px;
+  }
+  .card h2{font-size:1.3rem;margin-bottom:.15em;}
+  .card .sub{color:var(--ink-soft);font-size:.92rem;margin-bottom:18px;}
+
+  label{display:block;font-size:.85rem;color:var(--ink-soft);margin:14px 0 5px 0;}
+  input[type=text], input[type=tel], input[type=number], select, textarea{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:3px;
+    background:#fff;
+    font-family:'Work Sans',sans-serif;
+    font-size:.96rem;
+    color:var(--ink);
+  }
+  textarea{min-height:70px;resize:vertical;}
+  .row{display:flex;gap:14px;flex-wrap:wrap;}
+  .row > div{flex:1;min-width:180px;}
+
+  .radio-group{display:flex;gap:10px;margin-top:4px;}
+  .radio-group label.opt{
+    flex:1;
+    display:flex;align-items:center;gap:8px;
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:10px 12px;
+    margin:0;
+    cursor:pointer;
+    font-size:.92rem;color:var(--ink);
+  }
+  .radio-group label.opt.selected{border-color:var(--caramel);background:#FBF0DC;}
+  .radio-group input{width:auto;margin:0;}
+
+  button.btn{
+    display:inline-block;
+    background:var(--molasses);
+    color:var(--paper);
+    border:none;
+    border-radius:3px;
+    padding:12px 22px;
+    font-family:'Work Sans',sans-serif;
+    font-size:.96rem;font-weight:600;
+    cursor:pointer;
+    margin-top:18px;
+  }
+  button.btn:hover{background:#2E1F14;}
+  button.btn.secondary{background:transparent;color:var(--molasses);border:1px solid var(--molasses);}
+  button.btn.whatsapp{background:#3E7A4C;}
+  button.btn.whatsapp:hover{background:#33643F;}
+  button.btn.small{padding:7px 14px;font-size:.85rem;margin-top:0;}
+  button.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+  .hint{font-size:.82rem;color:var(--ink-soft);margin-top:4px;}
+  .error-box{
+    background:#FBE9E4;border:1px solid #D98E80;color:#7A2E1F;
+    padding:10px 14px;border-radius:3px;font-size:.88rem;margin-top:14px;
+  }
+  .hidden{display:none !important;}
+
+  /* Order confirmation */
+  .order-id-box{
+    background:var(--molasses);color:var(--paper);
+    border-radius:4px;padding:18px 20px;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+    margin-bottom:18px;
+  }
+  .order-id-box .id{font-family:'Zilla Slab',serif;font-size:1.4rem;letter-spacing:.02em;}
+
+  .pay-box{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;}
+  .pay-box img{width:170px;border:1px solid var(--line);border-radius:4px;}
+  .pay-box .upi-id{
+    font-family:'Zilla Slab',serif;font-size:1.15rem;color:var(--molasses);
+    background:#FBF0DC;border:1px dashed var(--caramel-dark);
+    padding:8px 14px;border-radius:3px;display:inline-block;margin:6px 0;
+  }
+
+  /* Timeline */
+  .timeline{list-style:none;margin:18px 0 0 0;padding:0;}
+  .timeline li{
+    position:relative;
+    padding:0 0 26px 34px;
+    border-left:2px solid var(--line);
+    margin-left:8px;
+  }
+  .timeline li:last-child{border-left:2px solid transparent;padding-bottom:0;}
+  .timeline li::before{
+    content:'';
+    position:absolute;left:-9px;top:0;
+    width:16px;height:16px;border-radius:50%;
+    background:var(--paper);border:2px solid var(--line);
+  }
+  .timeline li.done::before{background:var(--molasses);border-color:var(--molasses);}
+  .timeline li.current::before{background:var(--caramel);border-color:var(--caramel);}
+  .timeline li .step-title{font-weight:600;color:var(--ink-soft);}
+  .timeline li.done .step-title, .timeline li.current .step-title{color:var(--molasses);}
+  .timeline li .step-time{font-size:.8rem;color:var(--ink-soft);margin-top:2px;}
+
+  /* Owner dashboard table */
+  table.orders{width:100%;border-collapse:collapse;font-size:.87rem;}
+  table.orders th, table.orders td{
+    border-bottom:1px solid var(--line);
+    padding:9px 8px;
+    text-align:left;
+    vertical-align:top;
+  }
+  table.orders th{color:var(--ink-soft);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.03em;}
+  table.orders select{padding:5px 6px;font-size:.83rem;}
+  table.orders input[type=number]{padding:5px 6px;font-size:.83rem;width:100px;}
+  .status-pill{
+    display:inline-block;padding:2px 9px;border-radius:20px;font-size:.76rem;font-weight:600;
+    background:#EFE6CE;color:var(--wait);
+  }
+  .status-pill.delivered{background:#DEEBDB;color:var(--ok);}
+
+  footer{border-top:1px solid var(--line);padding:22px 0;color:var(--ink-soft);font-size:.82rem;}
+  .setup-banner{
+    background:#FBE9E4;border-bottom:1px solid #D98E80;color:#7A2E1F;
+    padding:10px 20px;font-size:.85rem;text-align:center;
+  }
+
+  @media (max-width:600px){
+    nav.tabs .tab{font-size:.85rem;padding:12px 4px;}
+    .brand h1{font-size:1.4rem;}
+  }
+</style>
+</head>
+<body>
+
+<div id="setupBanner" class="setup-banner hidden">
+  Setup needed: open index.html and set SCRIPT_URL in the CONFIG section at the top of the script — see SETUP-GUIDE.md.
+</div>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">MFM</div>
+    <div>
+      <h1>Mullan Floor Mill</h1>
+      <p class="tagline">Sugar, milled fine — Kalaburagi to your bakery</p>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button class="tab active" data-tab="order">Order</button>
+    <button class="tab" data-tab="track">Track Order</button>
+    <button class="tab" data-tab="owner">Owner</button>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <!-- ORDER PANEL -->
+  <section id="order" class="panel active">
+
+    <div class="price-ledger">
+      <div class="item">
+        <div class="label">Price per Kg</div>
+        <div class="value" id="priceKgDisplay">₹—</div>
+      </div>
+      <div class="item">
+        <div class="label">Price per Quintal</div>
+        <div class="value" id="priceQtlDisplay">₹—</div>
+      </div>
+      <div class="item">
+        <div class="label">Minimum order</div>
+        <div class="value" style="font-size:1.05rem;">10 kg (Gulbarga) · 1 Qtl (outstation)</div>
+      </div>
+    </div>
+
+    <div class="card" id="orderFormCard">
+      <h2>Place an order</h2>
+      <p class="sub">Fill in your details below. You'll get an Order ID to track your delivery, and we'll pass your order straight to the mill on WhatsApp.</p>
+
+      <form id="orderForm">
+        <div class="row">
+          <div>
+            <label>Your name</label>
+            <input type="text" id="custName" required>
+          </div>
+          <div>
+            <label>Phone number</label>
+            <input type="tel" id="custPhone" required placeholder="10-digit mobile number">
+          </div>
+        </div>
+
+        <label>How will you get your order?</label>
+        <div class="radio-group" id="deliveryTypeGroup">
+          <label class="opt selected"><input type="radio" name="deliveryType" value="Pickup" checked> Self-pickup from mill</label>
+          <label class="opt"><input type="radio" name="deliveryType" value="Delivery"> Delivery via transport</label>
+        </div>
+
+        <div id="addressFields" class="hidden">
+          <div class="row">
+            <div>
+              <label>City / Town</label>
+              <input type="text" id="custCity" placeholder="e.g. Humnabad, Wadi, Shahabad...">
+            </div>
+            <div>
+              <label>Full delivery address</label>
+              <input type="text" id="custAddress">
+            </div>
+          </div>
+          <p class="hint">Delivery charge depends on the transport used — we'll confirm the exact amount on WhatsApp once your order is dispatched.</p>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Quantity</label>
+            <input type="number" id="custQty" min="0.1" step="0.1" required>
+          </div>
+          <div>
+            <label>Unit</label>
+            <select id="custUnit">
+              <option value="Kg">Kg</option>
+              <option value="Quintal">Quintal (100 kg)</option>
+            </select>
+          </div>
+        </div>
+        <p class="hint" id="minHint"></p>
+
+        <label>Notes (optional)</label>
+        <textarea id="custNotes" placeholder="Anything else we should know"></textarea>
+
+        <div id="amountPreview" class="hint" style="font-size:.95rem;margin-top:12px;color:var(--molasses);font-weight:600;"></div>
+        <div id="orderError" class="error-box hidden"></div>
+
+        <button type="submit" class="btn" id="submitOrderBtn">Continue to payment</button>
+      </form>
+    </div>
+
+    <!-- Payment + confirmation, shown after form submit -->
+    <div class="card hidden" id="paymentCard">
+      <h2>Pay via UPI</h2>
+      <p class="sub">Scan the QR code or pay to the UPI ID below, then enter your payment reference (UTR) number.</p>
+      <div class="pay-box">
+        <img src="qr-code.jpeg" alt="UPI QR code">
+        <div>
+          <div class="upi-id" id="upiIdText">7624858405@ibl</div><br>
+          <a id="upiPayLink" class="btn" href="#" style="text-decoration:none;">Pay ₹<span id="payAmount">0</span> with a UPI app</a>
+          <p class="hint">On a phone, the button above opens PhonePe / GPay / Paytm directly with the amount filled in.</p>
+        </div>
+      </div>
+      <label>Payment reference / UTR number</label>
+      <input type="text" id="paymentRef" placeholder="Enter after completing payment">
+      <button class="btn" id="confirmOrderBtn">Confirm order</button>
+    </div>
+
+    <div class="card hidden" id="orderResultCard">
+      <div class="order-id-box">
+        <div>
+          <div style="font-size:.8rem;color:var(--jute);">YOUR ORDER ID</div>
+          <div class="id" id="resultOrderId">—</div>
+        </div>
+        <button class="btn whatsapp" id="sendWhatsAppBtn" style="margin-top:0;">Send order to Mullan Floor Mill on WhatsApp</button>
+      </div>
+      <p>Save your Order ID to check delivery status anytime in the <strong>Track Order</strong> tab. Tapping the WhatsApp button sends your order details straight to the mill so they can confirm it right away.</p>
+    </div>
+
+  </section>
+
+  <!-- TRACK PANEL -->
+  <section id="track" class="panel">
+    <div class="card">
+      <h2>Track your order</h2>
+      <p class="sub">Enter the Order ID you received when you placed your order.</p>
+      <form id="trackForm">
+        <div class="row" style="align-items:flex-end;">
+          <div><label>Order ID</label><input type="text" id="trackId" placeholder="e.g. MFM-260909-4821" required></div>
+          <div style="flex:none;"><button class="btn" type="submit" style="margin-top:0;">Track</button></div>
+        </div>
+      </form>
+      <div id="trackError" class="error-box hidden"></div>
+    </div>
+
+    <div class="card hidden" id="trackResultCard"></div>
+  </section>
+
+  <!-- OWNER PANEL -->
+  <section id="owner" class="panel">
+    <div class="card" id="ownerLoginCard">
+      <h2>Owner login</h2>
+      <p class="sub">For Mullan Floor Mill's use only.</p>
+      <label>Password</label>
+      <input type="text" id="ownerPassword">
+      <div id="ownerLoginError" class="error-box hidden"></div>
+      <button class="btn" id="ownerLoginBtn">Log in</button>
+    </div>
+
+    <div class="hidden" id="ownerDashboard">
+      <div class="card">
+        <h2>Pricing</h2>
+        <p class="sub">Update anytime — sugar prices move, your site should too.</p>
+        <div class="row">
+          <div><label>Price per Kg (₹)</label><input type="number" id="settingPriceKg"></div>
+          <div><label>Price per Quintal (₹)</label><input type="number" id="settingPriceQtl"></div>
+        </div>
+        <button class="btn small" id="savePricingBtn" style="margin-top:16px;">Save pricing</button>
+        <span id="pricingSaved" class="hint hidden" style="color:var(--ok);margin-left:10px;">Saved.</span>
+      </div>
+
+      <div class="card">
+        <h2>Orders</h2>
+        <button class="btn secondary small" id="refreshOrdersBtn">Refresh</button>
+        <div style="overflow-x:auto;margin-top:14px;">
+          <table class="orders">
+            <thead>
+              <tr>
+                <th>Order</th><th>Customer</th><th>Qty</th><th>Amount</th><th>Delivery</th><th>Status</th><th>Charge (₹)</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  Mullan Floor Mill · Sugar powder milling &amp; supply, Kalaburagi (Gulbarga), Karnataka
+</footer>
+
+<script>
+/* ======================= CONFIG — edit these ======================= */
+const CONFIG = {
+  // Paste your Google Apps Script Web App URL here (see SETUP-GUIDE.md). Leave blank to run in demo mode.
+  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzp6Glit-TH9U7grY8G6sskXHZZ4Nsq0NdQKHRfdXfyOOwWqUevzsR98ETWSwn1BQU/exec",
+  UPI_ID: "7624858405@ibl",
+  UPI_NAME: "Abdul Hadi",
+  OWNER_WHATSAPP: "917624858405",
+  MIN_KG_LOCAL: 10,
+  MIN_QUINTAL_OUTSTATION: 1,
+  LOCAL_CITY_KEYWORDS: ["gulbarga","kalaburagi","kalburgi"]
+};
+/* ===================================================================== */
+
+const STATUS_STEPS = ["Order Received","Confirmed","In Production","Dispatched","In Transit","Delivered"];
+const DEMO_MODE = !CONFIG.SCRIPT_URL;
+
+// ---------- Demo-mode local store (used only if no SCRIPT_URL is set) ----------
+const demoStore = {
+  settings: { pricePerKg: 75, pricePerQuintal: 7000, ownerPassword: "mullan123" },
+  orders: []
+};
+
+// ---------- Tabs ----------
+document.querySelectorAll('nav.tabs .tab').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs .tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+if (DEMO_MODE) {
+  document.getElementById('setupBanner').classList.remove('hidden');
+}
+
+// ---------- API helper ----------
+async function apiGet(params) {
+  if (DEMO_MODE) return demoApi('GET', params);
+  const url = CONFIG.SCRIPT_URL + '?' + new URLSearchParams(params).toString();
+  const res = await fetch(url);
+  return res.json();
+}
+async function apiPost(body) {
+  if (DEMO_MODE) return demoApi('POST', body);
+  const res = await fetch(CONFIG.SCRIPT_URL, { method:'POST', body: JSON.stringify(body) });
+  return res.json();
+}
+// Minimal in-browser fallback so the site is clickable before the backend is wired up.
+function demoApi(method, p) {
+  if (method === 'GET') {
+    if (p.action === 'settings') return { ok:true, pricePerKg: demoStore.settings.pricePerKg, pricePerQuintal: demoStore.settings.pricePerQuintal };
+    if (p.action === 'track') {
+      const o = demoStore.orders.find(o=>o.OrderID===p.id);
+      return o ? { ok:true, order:o } : { ok:false, error:'Order not found (demo mode — data resets on page reload)' };
+    }
+    if (p.action === 'list') {
+      if (p.password !== demoStore.settings.ownerPassword) return { ok:false, error:'Wrong password' };
+      return { ok:true, orders:[...demoStore.orders].reverse(), settings: demoStore.settings };
+    }
+  } else {
+    if (p.action === 'createOrder') {
+      const id = 'MFM-DEMO-' + Math.floor(1000+Math.random()*9000);
+      const pricePerUnit = p.unit==='Quintal'?demoStore.settings.pricePerQuintal:demoStore.settings.pricePerKg;
+      const amount = pricePerUnit * Number(p.quantity);
+      const order = { OrderID:id, Name:p.name, Phone:p.phone, DeliveryType:p.deliveryType, City:p.city, Address:p.address, Quantity:p.quantity, Unit:p.unit, PricePerUnit:pricePerUnit, Amount:amount, Status:'Order Received', DeliveryCharge:'', ETA:'', PaymentRef:p.paymentRef, Notes:p.notes, CreatedAt:new Date().toISOString() };
+      demoStore.orders.push(order);
+      return { ok:true, orderId:id, amount };
+    }
+    if (p.action === 'updateOrder') {
+      if (p.password !== demoStore.settings.ownerPassword) return { ok:false, error:'Wrong password' };
+      const o = demoStore.orders.find(o=>o.OrderID===p.orderId);
+      if (!o) return { ok:false, error:'Not found' };
+      if (p.status) o.Status = p.status;
+      if (p.deliveryCharge!==undefined) o.DeliveryCharge = p.deliveryCharge;
+      return { ok:true };
+    }
+    if (p.action === 'updateSettings') {
+      if (p.password !== demoStore.settings.ownerPassword) return { ok:false, error:'Wrong password' };
+      if (p.pricePerKg) demoStore.settings.pricePerKg = Number(p.pricePerKg);
+      if (p.pricePerQuintal) demoStore.settings.pricePerQuintal = Number(p.pricePerQuintal);
+      if (p.newPassword) demoStore.settings.ownerPassword = p.newPassword;
+      return { ok:true };
+    }
+  }
+  return { ok:false, error:'Unknown request' };
+}
+
+// ---------- Load prices on the order page ----------
+let currentPrices = { pricePerKg: 0, pricePerQuintal: 0 };
+async function loadPrices() {
+  const r = await apiGet({ action:'settings' });
+  if (r.ok) {
+    currentPrices = r;
+    document.getElementById('priceKgDisplay').textContent = '₹' + r.pricePerKg;
+    document.getElementById('priceQtlDisplay').textContent = '₹' + r.pricePerQuintal;
+  }
+}
+loadPrices();
+
+// ---------- Delivery type toggle ----------
+document.querySelectorAll('#deliveryTypeGroup input').forEach(radio=>{
+  radio.addEventListener('change', ()=>{
+    document.querySelectorAll('#deliveryTypeGroup .opt').forEach(o=>o.classList.remove('selected'));
+    radio.closest('.opt').classList.add('selected');
+    document.getElementById('addressFields').classList.toggle('hidden', radio.value !== 'Delivery');
+    updateMinHint();
+  });
+});
+
+function isLocalCity(city){
+  city = (city||'').toLowerCase();
+  return CONFIG.LOCAL_CITY_KEYWORDS.some(k=>city.includes(k)) || !city;
+}
+function currentDeliveryType(){
+  return document.querySelector('#deliveryTypeGroup input:checked').value;
+}
+function updateMinHint(){
+  const type = currentDeliveryType();
+  const city = document.getElementById('custCity').value;
+  const local = type==='Pickup' ? true : isLocalCity(city);
+  document.getElementById('minHint').textContent = local
+    ? `Minimum order within Gulbarga: ${CONFIG.MIN_KG_LOCAL} kg`
+    : `Minimum order for outstation delivery: ${CONFIG.MIN_QUINTAL_OUTSTATION} quintal`;
+}
+document.getElementById('custCity').addEventListener('input', updateMinHint);
+updateMinHint();
+
+document.getElementById('custQty').addEventListener('input', updateAmountPreview);
+document.getElementById('custUnit').addEventListener('change', updateAmountPreview);
+function updateAmountPreview(){
+  const qty = Number(document.getElementById('custQty').value)||0;
+  const unit = document.getElementById('custUnit').value;
+  const price = unit==='Quintal' ? currentPrices.pricePerQuintal : currentPrices.pricePerKg;
+  const amount = qty*price;
+  document.getElementById('amountPreview').textContent = amount ? `Estimated amount: ₹${amount.toLocaleString('en-IN')} (plus delivery charge, if applicable)` : '';
+}
+
+// ---------- Order form submit ----------
+let pendingOrder = null;
+document.getElementById('orderForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const errBox = document.getElementById('orderError');
+  errBox.classList.add('hidden');
+
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const deliveryType = currentDeliveryType();
+  const city = document.getElementById('custCity').value.trim();
+  const address = document.getElementById('custAddress').value.trim();
+  const qty = Number(document.getElementById('custQty').value);
+  const unit = document.getElementById('custUnit').value;
+  const notes = document.getElementById('custNotes').value.trim();
+
+  if (!/^\d{10}$/.test(phone)) {
+    errBox.textContent = 'Please enter a valid 10-digit phone number.';
+    errBox.classList.remove('hidden');
+    return;
+  }
+  if (deliveryType === 'Delivery' && (!city || !address)) {
+    errBox.textContent = 'Please enter your city and delivery address.';
+    errBox.classList.remove('hidden');
+    return;
+  }
+  const local = deliveryType==='Pickup' ? true : isLocalCity(city);
+  if (local && unit==='Kg' && qty < CONFIG.MIN_KG_LOCAL) {
+    errBox.textContent = `Minimum order within Gulbarga is ${CONFIG.MIN_KG_LOCAL} kg.`;
+    errBox.classList.remove('hidden'); return;
+  }
+  if (!local && (unit==='Kg' ? qty < CONFIG.MIN_QUINTAL_OUTSTATION*100 : qty < CONFIG.MIN_QUINTAL_OUTSTATION)) {
+    errBox.textContent = `Minimum order for outstation delivery is ${CONFIG.MIN_QUINTAL_OUTSTATION} quintal.`;
+    errBox.classList.remove('hidden'); return;
+  }
+
+  const price = unit==='Quintal' ? currentPrices.pricePerQuintal : currentPrices.pricePerKg;
+  pendingOrder = { name, phone, deliveryType, city, address, quantity:qty, unit, notes, amount: qty*price };
+
+  document.getElementById('payAmount').textContent = pendingOrder.amount.toLocaleString('en-IN');
+  document.getElementById('upiPayLink').href = `upi://pay?pa=${encodeURIComponent(CONFIG.UPI_ID)}&pn=${encodeURIComponent(CONFIG.UPI_NAME)}&am=${pendingOrder.amount}&cu=INR`;
+  document.getElementById('orderFormCard').classList.add('hidden');
+  document.getElementById('paymentCard').classList.remove('hidden');
+});
+
+document.getElementById('confirmOrderBtn').addEventListener('click', async ()=>{
+  const ref = document.getElementById('paymentRef').value.trim();
+  const btn = document.getElementById('confirmOrderBtn');
+  btn.disabled = true; btn.textContent = 'Placing order...';
+  const r = await apiPost({ action:'createOrder', ...pendingOrder, paymentRef: ref });
+  btn.disabled = false; btn.textContent = 'Confirm order';
+  if (!r.ok) { alert('Something went wrong: ' + (r.error||'please try again')); return; }
+
+  document.getElementById('paymentCard').classList.add('hidden');
+  document.getElementById('orderResultCard').classList.remove('hidden');
+  document.getElementById('resultOrderId').textContent = r.orderId;
+
+  const msg = `New order from Mullan Floor Mill website:\n` +
+    `Order ID: ${r.orderId}\n` +
+    `Name: ${pendingOrder.name}\n` +
+    `Phone: ${pendingOrder.phone}\n` +
+    `${pendingOrder.deliveryType==='Delivery' ? 'Delivery to: '+pendingOrder.city+' — '+pendingOrder.address : 'Self-pickup'}\n` +
+    `Quantity: ${pendingOrder.quantity} ${pendingOrder.unit}\n` +
+    `Amount: ₹${pendingOrder.amount}\n` +
+    `Payment ref: ${ref || 'not provided'}` +
+    (pendingOrder.notes ? `\nNotes: ${pendingOrder.notes}` : '');
+
+  document.getElementById('sendWhatsAppBtn').onclick = ()=>{
+    window.open(`https://wa.me/${CONFIG.OWNER_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
+  };
+});
+
+// ---------- Track order ----------
+document.getElementById('trackForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const id = document.getElementById('trackId').value.trim();
+  const errBox = document.getElementById('trackError');
+  const resultCard = document.getElementById('trackResultCard');
+  errBox.classList.add('hidden'); resultCard.classList.add('hidden');
+
+  const r = await apiGet({ action:'track', id });
+  if (!r.ok) { errBox.textContent = r.error || 'Order not found.'; errBox.classList.remove('hidden'); return; }
+
+  const o = r.order;
+  const stepIndex = STATUS_STEPS.indexOf(o.Status);
+  let html = `<h2>Order ${o.OrderID}</h2>
+    <p class="sub">${o.Name} · ${o.Quantity} ${o.Unit} · ${o.DeliveryType}${o.DeliveryType==='Delivery' ? ' to '+o.City : ''}</p>`;
+  if (o.DeliveryCharge) html += `<p><strong>Delivery charge:</strong> ₹${o.DeliveryCharge}</p>`;
+  if (o.ETA) html += `<p><strong>Expected delivery:</strong> ${o.ETA}</p>`;
+  html += '<ul class="timeline">';
+  STATUS_STEPS.forEach((step, i)=>{
+    let cls = i < stepIndex ? 'done' : (i===stepIndex ? 'current' : '');
+    html += `<li class="${cls}"><div class="step-title">${step}</div></li>`;
+  });
+  html += '</ul>';
+  resultCard.innerHTML = html;
+  resultCard.classList.remove('hidden');
+});
+
+// ---------- Owner login ----------
+let ownerPasswordCache = '';
+document.getElementById('ownerLoginBtn').addEventListener('click', async ()=>{
+  const pw = document.getElementById('ownerPassword').value;
+  const r = await apiGet({ action:'list', password: pw });
+  const errBox = document.getElementById('ownerLoginError');
+  if (!r.ok) { errBox.textContent = r.error || 'Wrong password.'; errBox.classList.remove('hidden'); return; }
+  errBox.classList.add('hidden');
+  ownerPasswordCache = pw;
+  document.getElementById('ownerLoginCard').classList.add('hidden');
+  document.getElementById('ownerDashboard').classList.remove('hidden');
+  document.getElementById('settingPriceKg').value = r.settings.pricePerKg;
+  document.getElementById('settingPriceQtl').value = r.settings.pricePerQuintal;
+  renderOrders(r.orders);
+});
+
+document.getElementById('savePricingBtn').addEventListener('click', async ()=>{
+  const pricePerKg = document.getElementById('settingPriceKg').value;
+  const pricePerQuintal = document.getElementById('settingPriceQtl').value;
+  const r = await apiPost({ action:'updateSettings', password: ownerPasswordCache, pricePerKg, pricePerQuintal });
+  if (r.ok) {
+    const saved = document.getElementById('pricingSaved');
+    saved.classList.remove('hidden');
+    setTimeout(()=>saved.classList.add('hidden'), 2000);
+  } else {
+    alert('Could not save: ' + (r.error||''));
+  }
+});
+
+document.getElementById('refreshOrdersBtn').addEventListener('click', async ()=>{
+  const r = await apiGet({ action:'list', password: ownerPasswordCache });
+  if (r.ok) renderOrders(r.orders);
+});
+
+function renderOrders(orders){
+  const tbody = document.getElementById('ordersTableBody');
+  tbody.innerHTML = '';
+  orders.forEach(o=>{
+    const tr = document.createElement('tr');
+    const statusOptions = STATUS_STEPS.map(s=>`<option value="${s}" ${s===o.Status?'selected':''}>${s}</option>`).join('');
+    tr.innerHTML = `
+      <td>${o.OrderID}<br><span class="hint">${new Date(o.CreatedAt).toLocaleDateString('en-IN')}</span></td>
+      <td>${o.Name}<br><span class="hint">${o.Phone}</span></td>
+      <td>${o.Quantity} ${o.Unit}</td>
+      <td>₹${o.Amount}</td>
+      <td>${o.DeliveryType}${o.DeliveryType==='Delivery' ? '<br><span class="hint">'+(o.City||'')+'</span>' : ''}</td>
+      <td><select class="status-select">${statusOptions}</select></td>
+      <td><input type="number" class="charge-input" value="${o.DeliveryCharge||''}" placeholder="₹" ${o.DeliveryType!=='Delivery'?'disabled':''}></td>
+      <td>
+        <button class="btn small save-btn" style="margin-bottom:6px;">Save</button><br>
+        <button class="btn small whatsapp notify-btn">Notify on WhatsApp</button>
+      </td>
+    `;
+    tr.querySelector('.save-btn').addEventListener('click', async ()=>{
+      const status = tr.querySelector('.status-select').value;
+      const deliveryCharge = tr.querySelector('.charge-input').value;
+      const r = await apiPost({ action:'updateOrder', password: ownerPasswordCache, orderId:o.OrderID, status, deliveryCharge });
+      if (r.ok) { o.Status = status; o.DeliveryCharge = deliveryCharge; alert('Updated ' + o.OrderID); }
+      else alert('Failed: ' + (r.error||''));
+    });
+    tr.querySelector('.notify-btn').addEventListener('click', ()=>{
+      const status = tr.querySelector('.status-select').value;
+      const charge = tr.querySelector('.charge-input').value;
+      let msg = `Mullan Floor Mill — update on order ${o.OrderID}:\nStatus: ${status}`;
+      if (charge) msg += `\nDelivery charge: ₹${charge}`;
+      msg += `\nThank you for your order!`;
+      window.open(`https://wa.me/91${o.Phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    });
+    tbody.appendChild(tr);
+  });
+}
+</script>
+</body>
+</html>
