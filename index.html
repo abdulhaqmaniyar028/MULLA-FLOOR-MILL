@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mullan Floor Mill — Order Sugar Powder Online</title>
+<title>Bharath Special Icing Sugar — Order Online</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -43,19 +43,63 @@
   header.topbar{
     background:var(--molasses);
     color:var(--paper);
-    padding:22px 0 0 0;
   }
   .brand{display:flex;align-items:center;gap:16px;max-width:900px;margin:0 auto;padding:0 20px 18px 20px;}
   .brand-mark{
     width:56px;height:56px;flex:none;
     border:2px solid var(--caramel);
     border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
-    font-family:'Zilla Slab',serif;font-weight:700;font-size:15px;letter-spacing:1px;
-    color:var(--caramel);
+    object-fit:cover;
+    background:#fff;
   }
   .brand h1{color:var(--paper);font-size:1.7rem;margin:0;}
   .brand .tagline{color:var(--jute);margin:2px 0 0 0;font-size:.92rem;}
+
+  /* Hero banner */
+  .hero{
+    position:relative;
+    height:280px;
+    overflow:hidden;
+    background:var(--molasses);
+  }
+  .hero .hero-bg{
+    position:absolute;top:0;left:0;width:100%;height:100%;
+    background-image:url('product-bag.jpg');
+    background-size:cover;
+    background-position:center 30%;
+    animation:heroPan 22s ease-in-out infinite alternate;
+  }
+  @keyframes heroPan{
+    0%{ transform:scale(1) translateY(0); }
+    100%{ transform:scale(1.12) translateY(-2%); }
+  }
+  .hero::after{
+    content:'';
+    position:absolute;inset:0;
+    background:linear-gradient(180deg, rgba(43,31,20,0.55) 0%, rgba(43,31,20,0.72) 60%, rgba(43,31,20,0.92) 100%);
+  }
+  .hero-content{
+    position:relative;z-index:1;
+    height:100%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;
+    padding:0 20px;
+  }
+  .hero-content h1{
+    color:var(--paper);
+    font-size:2.3rem;
+    letter-spacing:.01em;
+    text-shadow:0 2px 10px rgba(0,0,0,0.35);
+  }
+  .hero-content .tagline{
+    color:var(--jute);
+    font-size:1rem;
+    margin-top:4px;
+  }
+  @media (max-width:600px){
+    .hero{height:220px;}
+    .hero-content h1{font-size:1.6rem;}
+  }
   nav.tabs{
     display:flex;
     max-width:900px;margin:0 auto;
@@ -233,14 +277,15 @@
   Setup needed: open index.html and set SCRIPT_URL in the CONFIG section at the top of the script — see SETUP-GUIDE.md.
 </div>
 
-<header class="topbar">
-  <div class="brand">
-    <div class="brand-mark">MFM</div>
-    <div>
-      <h1>Mullan Floor Mill</h1>
-      <p class="tagline">Sugar, milled fine — Kalaburagi to your bakery</p>
-    </div>
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <h1>Bharath Special Icing Sugar</h1>
+    <p class="tagline">Sugar, milled fine — Kalaburagi to your bakery</p>
   </div>
+</div>
+
+<header class="topbar">
   <nav class="tabs">
     <button class="tab active" data-tab="order">Order</button>
     <button class="tab" data-tab="track">Track Order</button>
@@ -267,10 +312,11 @@
         <div class="value" style="font-size:1.05rem;">10 kg (Gulbarga) · 1 Qtl (outstation)</div>
       </div>
     </div>
+    <p class="hint" id="fssaiLine" style="margin:-14px 0 20px 2px;"></p>
 
     <div class="card" id="orderFormCard">
       <h2>Place an order</h2>
-      <p class="sub">Fill in your details below. You'll get an Order ID to track your delivery, and we'll pass your order straight to the mill on WhatsApp.</p>
+      <p class="sub">Fill in your details below. You'll get an Order ID to track your delivery, and the mill is notified automatically — no extra step needed on your end.</p>
 
       <form id="orderForm">
         <div class="row">
@@ -337,10 +383,12 @@
         <img src="qr-code.jpeg" alt="UPI QR code">
         <div>
           <div class="upi-id" id="upiIdText">7624858405@ibl</div><br>
-          <a id="upiPayLink" class="btn" href="#" style="text-decoration:none;">Pay ₹<span id="payAmount">0</span> with a UPI app</a>
-          <p class="hint">On a phone, the button above opens PhonePe / GPay / Paytm directly with the amount filled in.</p>
+          <a id="phonePePayLink" class="btn" href="#" style="text-decoration:none;">Pay ₹<span id="payAmount">0</span> with PhonePe</a><br>
+          <a id="upiPayLink" class="btn secondary small" href="#" style="text-decoration:none;margin-top:10px;">Or pay with GPay / Paytm / any UPI app</a>
+          <p class="hint">On a phone, the PhonePe button opens the app directly with the amount filled in. If PhonePe isn't installed, use the other link instead.</p>
         </div>
       </div>
+      <p id="returnPrompt" class="hint hidden" style="color:var(--molasses);font-weight:600;">Welcome back — if your payment went through, enter the reference number below to confirm your order.</p>
       <label>Payment reference / UTR number</label>
       <input type="text" id="paymentRef" placeholder="Enter after completing payment">
       <button class="btn" id="confirmOrderBtn">Confirm order</button>
@@ -352,9 +400,9 @@
           <div style="font-size:.8rem;color:var(--jute);">YOUR ORDER ID</div>
           <div class="id" id="resultOrderId">—</div>
         </div>
-        <button class="btn whatsapp" id="sendWhatsAppBtn" style="margin-top:0;">Send order to Mullan Floor Mill on WhatsApp</button>
       </div>
-      <p>Save your Order ID to check delivery status anytime in the <strong>Track Order</strong> tab. Tapping the WhatsApp button sends your order details straight to the mill so they can confirm it right away.</p>
+      <p>Save your Order ID to check delivery status anytime in the <strong>Track Order</strong> tab. The mill has already been notified of your order automatically — you don't need to do anything else.</p>
+      <button class="btn secondary small" id="sendWhatsAppBtn" style="margin-top:6px;">Also message us on WhatsApp (optional)</button>
     </div>
 
   </section>
@@ -366,7 +414,7 @@
       <p class="sub">Enter the Order ID you received when you placed your order.</p>
       <form id="trackForm">
         <div class="row" style="align-items:flex-end;">
-          <div><label>Order ID</label><input type="text" id="trackId" placeholder="e.g. MFM-260909-4821" required></div>
+          <div><label>Order ID</label><input type="text" id="trackId" placeholder="e.g. BSI-260909-4821" required></div>
           <div style="flex:none;"><button class="btn" type="submit" style="margin-top:0;">Track</button></div>
         </div>
       </form>
@@ -380,7 +428,7 @@
   <section id="owner" class="panel">
     <div class="card" id="ownerLoginCard">
       <h2>Owner login</h2>
-      <p class="sub">For Mullan Floor Mill's use only.</p>
+      <p class="sub">For Bharath Special Icing Sugar's use only.</p>
       <label>Password</label>
       <input type="text" id="ownerPassword">
       <div id="ownerLoginError" class="error-box hidden"></div>
@@ -397,6 +445,26 @@
         </div>
         <button class="btn small" id="savePricingBtn" style="margin-top:16px;">Save pricing</button>
         <span id="pricingSaved" class="hint hidden" style="color:var(--ok);margin-left:10px;">Saved.</span>
+      </div>
+
+      <div class="card">
+        <h2>Business details</h2>
+        <p class="sub">Shown near the top of the Order page. Leave blank while renewal is pending — it'll just say "renewal in progress" until you fill this in.</p>
+        <label>FSSAI License No.</label>
+        <input type="text" id="settingFssai" placeholder="Leave blank if not yet renewed">
+        <button class="btn small" id="saveBusinessBtn" style="margin-top:16px;">Save</button>
+        <span id="businessSaved" class="hint hidden" style="color:var(--ok);margin-left:10px;">Saved.</span>
+      </div>
+
+      <div class="card">
+        <h2>Automatic WhatsApp order alerts</h2>
+        <p class="sub">One-time free setup so you get a WhatsApp message the instant a new order comes in — no customer action needed. See SETUP-GUIDE.md for how to get these two values from CallMeBot (free).</p>
+        <div class="row">
+          <div><label>CallMeBot API key</label><input type="text" id="settingCallMeBotKey" placeholder="e.g. 123456"></div>
+          <div><label>Your WhatsApp number (with country code)</label><input type="text" id="settingCallMeBotPhone" placeholder="917624858405"></div>
+        </div>
+        <button class="btn small" id="saveAlertsBtn" style="margin-top:16px;">Save</button>
+        <span id="alertsSaved" class="hint hidden" style="color:var(--ok);margin-left:10px;">Saved.</span>
       </div>
 
       <div class="card">
@@ -419,7 +487,7 @@
 </main>
 
 <footer class="wrap">
-  Mullan Floor Mill · Sugar powder milling &amp; supply, Kalaburagi (Gulbarga), Karnataka
+  Bharath Special Icing Sugar · Sugar powder milling &amp; supply, Kalaburagi (Gulbarga), Karnataka
 </footer>
 
 <script>
@@ -441,7 +509,7 @@ const DEMO_MODE = !CONFIG.SCRIPT_URL;
 
 // ---------- Demo-mode local store (used only if no SCRIPT_URL is set) ----------
 const demoStore = {
-  settings: { pricePerKg: 75, pricePerQuintal: 7000, ownerPassword: "mullan123" },
+  settings: { pricePerKg: 75, pricePerQuintal: 7000, ownerPassword: "mullan123", fssai: "", callMeBotApiKey: "", callMeBotPhone: "" },
   orders: []
 };
 
@@ -474,7 +542,7 @@ async function apiPost(body) {
 // Minimal in-browser fallback so the site is clickable before the backend is wired up.
 function demoApi(method, p) {
   if (method === 'GET') {
-    if (p.action === 'settings') return { ok:true, pricePerKg: demoStore.settings.pricePerKg, pricePerQuintal: demoStore.settings.pricePerQuintal };
+    if (p.action === 'settings') return { ok:true, pricePerKg: demoStore.settings.pricePerKg, pricePerQuintal: demoStore.settings.pricePerQuintal, fssai: demoStore.settings.fssai };
     if (p.action === 'track') {
       const o = demoStore.orders.find(o=>o.OrderID===p.id);
       return o ? { ok:true, order:o } : { ok:false, error:'Order not found (demo mode — data resets on page reload)' };
@@ -485,7 +553,7 @@ function demoApi(method, p) {
     }
   } else {
     if (p.action === 'createOrder') {
-      const id = 'MFM-DEMO-' + Math.floor(1000+Math.random()*9000);
+      const id = 'BSI-DEMO-' + Math.floor(1000+Math.random()*9000);
       const pricePerUnit = p.unit==='Quintal'?demoStore.settings.pricePerQuintal:demoStore.settings.pricePerKg;
       const amount = pricePerUnit * Number(p.quantity);
       const order = { OrderID:id, Name:p.name, Phone:p.phone, DeliveryType:p.deliveryType, City:p.city, Address:p.address, Quantity:p.quantity, Unit:p.unit, PricePerUnit:pricePerUnit, Amount:amount, Status:'Order Received', DeliveryCharge:'', ETA:'', PaymentRef:p.paymentRef, Notes:p.notes, CreatedAt:new Date().toISOString() };
@@ -505,6 +573,9 @@ function demoApi(method, p) {
       if (p.pricePerKg) demoStore.settings.pricePerKg = Number(p.pricePerKg);
       if (p.pricePerQuintal) demoStore.settings.pricePerQuintal = Number(p.pricePerQuintal);
       if (p.newPassword) demoStore.settings.ownerPassword = p.newPassword;
+      if (p.fssai !== undefined) demoStore.settings.fssai = p.fssai;
+      if (p.callMeBotApiKey !== undefined) demoStore.settings.callMeBotApiKey = p.callMeBotApiKey;
+      if (p.callMeBotPhone !== undefined) demoStore.settings.callMeBotPhone = p.callMeBotPhone;
       return { ok:true };
     }
   }
@@ -519,6 +590,9 @@ async function loadPrices() {
     currentPrices = r;
     document.getElementById('priceKgDisplay').textContent = '₹' + r.pricePerKg;
     document.getElementById('priceQtlDisplay').textContent = '₹' + r.pricePerQuintal;
+    document.getElementById('fssaiLine').textContent = r.fssai
+      ? `FSSAI Lic. No. ${r.fssai}`
+      : 'FSSAI license renewal in progress';
   }
 }
 loadPrices();
@@ -601,9 +675,31 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
   pendingOrder = { name, phone, deliveryType, city, address, quantity:qty, unit, notes, amount: qty*price };
 
   document.getElementById('payAmount').textContent = pendingOrder.amount.toLocaleString('en-IN');
-  document.getElementById('upiPayLink').href = `upi://pay?pa=${encodeURIComponent(CONFIG.UPI_ID)}&pn=${encodeURIComponent(CONFIG.UPI_NAME)}&am=${pendingOrder.amount}&cu=INR`;
+  const upiParams = `pa=${encodeURIComponent(CONFIG.UPI_ID)}&pn=${encodeURIComponent(CONFIG.UPI_NAME)}&am=${pendingOrder.amount}&cu=INR`;
+  const phonePeLink = `phonepe://pay?${upiParams}`;
+  const upiLink = `upi://pay?${upiParams}`;
+  document.getElementById('phonePePayLink').href = phonePeLink;
+  document.getElementById('upiPayLink').href = upiLink;
   document.getElementById('orderFormCard').classList.add('hidden');
   document.getElementById('paymentCard').classList.remove('hidden');
+
+  // On phones, try to jump straight into PhonePe automatically.
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (isMobile) {
+    awaitingReturnFromUpi = true;
+    setTimeout(()=>{ window.location.href = phonePeLink; }, 400);
+  }
+});
+
+// Detect when the customer comes back to this tab after leaving to pay (e.g. in PhonePe/GPay),
+// and prompt them to confirm — the closest a free, static site can get to an automatic payment redirect.
+let awaitingReturnFromUpi = false;
+document.addEventListener('visibilitychange', ()=>{
+  if (!document.hidden && awaitingReturnFromUpi && !document.getElementById('paymentCard').classList.contains('hidden')) {
+    awaitingReturnFromUpi = false;
+    document.getElementById('returnPrompt').classList.remove('hidden');
+    document.getElementById('paymentRef').focus();
+  }
 });
 
 document.getElementById('confirmOrderBtn').addEventListener('click', async ()=>{
@@ -618,7 +714,7 @@ document.getElementById('confirmOrderBtn').addEventListener('click', async ()=>{
   document.getElementById('orderResultCard').classList.remove('hidden');
   document.getElementById('resultOrderId').textContent = r.orderId;
 
-  const msg = `New order from Mullan Floor Mill website:\n` +
+  const msg = `New order from Bharath Special Icing Sugar website:\n` +
     `Order ID: ${r.orderId}\n` +
     `Name: ${pendingOrder.name}\n` +
     `Phone: ${pendingOrder.phone}\n` +
@@ -673,7 +769,35 @@ document.getElementById('ownerLoginBtn').addEventListener('click', async ()=>{
   document.getElementById('ownerDashboard').classList.remove('hidden');
   document.getElementById('settingPriceKg').value = r.settings.pricePerKg;
   document.getElementById('settingPriceQtl').value = r.settings.pricePerQuintal;
+  document.getElementById('settingFssai').value = r.settings.fssai || '';
+  document.getElementById('settingCallMeBotKey').value = r.settings.callMeBotApiKey || '';
+  document.getElementById('settingCallMeBotPhone').value = r.settings.callMeBotPhone || '';
   renderOrders(r.orders);
+});
+
+document.getElementById('saveBusinessBtn').addEventListener('click', async ()=>{
+  const fssai = document.getElementById('settingFssai').value.trim();
+  const r = await apiPost({ action:'updateSettings', password: ownerPasswordCache, fssai });
+  if (r.ok) {
+    const saved = document.getElementById('businessSaved');
+    saved.classList.remove('hidden');
+    setTimeout(()=>saved.classList.add('hidden'), 2000);
+  } else {
+    alert('Could not save: ' + (r.error||''));
+  }
+});
+
+document.getElementById('saveAlertsBtn').addEventListener('click', async ()=>{
+  const callMeBotApiKey = document.getElementById('settingCallMeBotKey').value.trim();
+  const callMeBotPhone = document.getElementById('settingCallMeBotPhone').value.trim();
+  const r = await apiPost({ action:'updateSettings', password: ownerPasswordCache, callMeBotApiKey, callMeBotPhone });
+  if (r.ok) {
+    const saved = document.getElementById('alertsSaved');
+    saved.classList.remove('hidden');
+    setTimeout(()=>saved.classList.add('hidden'), 2000);
+  } else {
+    alert('Could not save: ' + (r.error||''));
+  }
 });
 
 document.getElementById('savePricingBtn').addEventListener('click', async ()=>{
@@ -723,7 +847,7 @@ function renderOrders(orders){
     tr.querySelector('.notify-btn').addEventListener('click', ()=>{
       const status = tr.querySelector('.status-select').value;
       const charge = tr.querySelector('.charge-input').value;
-      let msg = `Mullan Floor Mill — update on order ${o.OrderID}:\nStatus: ${status}`;
+      let msg = `Bharath Special Icing Sugar — update on order ${o.OrderID}:\nStatus: ${status}`;
       if (charge) msg += `\nDelivery charge: ₹${charge}`;
       msg += `\nThank you for your order!`;
       window.open(`https://wa.me/91${o.Phone}?text=${encodeURIComponent(msg)}`, '_blank');
