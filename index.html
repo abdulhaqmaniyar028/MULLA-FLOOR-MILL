@@ -7,6 +7,24 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+/* Gives 3D depth to the box containing the image */
+.product-showcase {
+  perspective: 1000px;
+}
+
+/* Base styles and smooth 3D transition for the image */
+.product-showcase img {
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
+}
+
+/* 3D tilt effect on hover */
+.product-showcase img:hover {
+  transform: rotateX(8deg) rotateY(-12deg) scale(1.05);
+  box-shadow: -15px 20px 30px rgba(0, 0, 0, 0.25);
+}
   :root{
     --cream:#F6F0E4;
     --paper:#FBF8F1;
@@ -332,7 +350,7 @@
   <section id="order" class="panel active">
 
     <div class="product-showcase">
-      <img src="product-bag.jpg" alt="Bharath Special Icing Sugar pack">
+      <div class="bharath-logo-wrapper">...</div>
       <div class="copy">
         <h3>Bharath Special Icing Sugar</h3>
         <p>Finely milled, packed fresh, and trusted by bakeries across Kalaburagi and beyond.</p>
