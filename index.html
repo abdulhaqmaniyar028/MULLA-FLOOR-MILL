@@ -100,6 +100,39 @@
     .hero{height:220px;}
     .hero-content h1{font-size:1.6rem;}
   }
+
+  /* Entrance + floating animations */
+  @keyframes fadeInUp{
+    from{ opacity:0; transform:translateY(18px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .hero-content h1, .hero-content .tagline{
+    animation:fadeInUp 1s ease-out both;
+  }
+  .hero-content .tagline{ animation-delay:.15s; }
+
+  @keyframes floatY{
+    0%,100%{ transform:translateY(0) rotate(-1deg); }
+    50%{ transform:translateY(-10px) rotate(1deg); }
+  }
+  .product-showcase{
+    display:flex;align-items:center;gap:22px;flex-wrap:wrap;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:18px 22px;
+    margin-bottom:20px;
+    opacity:0;
+    animation:fadeInUp .8s ease-out .1s forwards;
+  }
+  .product-showcase img{
+    width:110px;
+    border-radius:6px;
+    box-shadow:0 14px 24px -10px rgba(43,36,24,0.35);
+    animation:floatY 4.5s ease-in-out infinite;
+  }
+  .product-showcase .copy h3{margin-bottom:.2em;font-size:1.05rem;}
+  .product-showcase .copy p{margin:0;color:var(--ink-soft);font-size:.88rem;}
   nav.tabs{
     display:flex;
     max-width:900px;margin:0 auto;
@@ -297,6 +330,14 @@
 
   <!-- ORDER PANEL -->
   <section id="order" class="panel active">
+
+    <div class="product-showcase">
+      <img src="product-bag.jpg" alt="Bharath Special Icing Sugar pack">
+      <div class="copy">
+        <h3>Bharath Special Icing Sugar</h3>
+        <p>Finely milled, packed fresh, and trusted by bakeries across Kalaburagi and beyond.</p>
+      </div>
+    </div>
 
     <div class="price-ledger">
       <div class="item">
