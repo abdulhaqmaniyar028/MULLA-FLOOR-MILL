@@ -7,44 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  /* Styling for the product showcase image */
-.product-showcase img {
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
-  /* The animation is connected here */
-  animation: continuousFloat 5s ease-in-out infinite;
-}
-
-/* Defines the continuous floating motion */
-@keyframes continuousFloat {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-12px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
-}
-/* Gives 3D depth to the box containing the image */
-.product-showcase {
-  perspective: 1000px;
-}
-
-/* Base styles and smooth 3D transition for the image */
-.product-showcase img {
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  transform-style: preserve-3d;
-  transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
-}
-
-/* 3D tilt effect on hover */
-.product-showcase img:hover {
-  transform: rotateX(8deg) rotateY(-12deg) scale(1.05);
-  box-shadow: -15px 20px 30px rgba(0, 0, 0, 0.25);
-}
   :root{
     --cream:#F6F0E4;
     --paper:#FBF8F1;
@@ -81,14 +43,6 @@
   header.topbar{
     background:var(--molasses);
     color:var(--paper);
-  }
-  .brand{display:flex;align-items:center;gap:16px;max-width:900px;margin:0 auto;padding:0 20px 18px 20px;}
-  .brand-mark{
-    width:56px;height:56px;flex:none;
-    border:2px solid var(--caramel);
-    border-radius:50%;
-    object-fit:cover;
-    background:#fff;
   }
   .brand h1{color:var(--paper);font-size:1.7rem;margin:0;}
   .brand .tagline{color:var(--jute);margin:2px 0 0 0;font-size:.92rem;}
@@ -139,7 +93,7 @@
     .hero-content h1{font-size:1.6rem;}
   }
 
-  /* Entrance + floating animations */
+  /* Entrance animation for hero text */
   @keyframes fadeInUp{
     from{ opacity:0; transform:translateY(18px); }
     to{ opacity:1; transform:translateY(0); }
@@ -149,6 +103,9 @@
   }
   .hero-content .tagline{ animation-delay:.15s; }
 
+  /* Product showcase card: the image wrapper floats continuously,
+     and the photo itself tilts in 3D on hover — kept on separate
+     elements so the two animations don't fight over `transform`. */
   @keyframes floatY{
     0%,100%{ transform:translateY(0) rotate(-1deg); }
     50%{ transform:translateY(-10px) rotate(1deg); }
@@ -163,14 +120,26 @@
     opacity:0;
     animation:fadeInUp .8s ease-out .1s forwards;
   }
-  .product-showcase img{
-    width:110px;
-    border-radius:6px;
-    box-shadow:0 14px 24px -10px rgba(43,36,24,0.35);
+  .showcase-img-wrap{
+    flex:none;
+    perspective:1000px;
     animation:floatY 4.5s ease-in-out infinite;
+  }
+  .showcase-img-wrap img{
+    display:block;
+    width:110px;
+    border-radius:8px;
+    box-shadow:0 14px 24px -10px rgba(43,36,24,0.35);
+    transform-style:preserve-3d;
+    transition:transform .4s ease-out, box-shadow .4s ease-out;
+  }
+  .showcase-img-wrap img:hover{
+    transform:rotateX(8deg) rotateY(-12deg) scale(1.08);
+    box-shadow:-12px 20px 28px rgba(43,36,24,0.35);
   }
   .product-showcase .copy h3{margin-bottom:.2em;font-size:1.05rem;}
   .product-showcase .copy p{margin:0;color:var(--ink-soft);font-size:.88rem;}
+
   nav.tabs{
     display:flex;
     max-width:900px;margin:0 auto;
@@ -370,7 +339,9 @@
   <section id="order" class="panel active">
 
     <div class="product-showcase">
-      <div class="bharath-logo-wrapper">...</div>
+      <div class="showcase-img-wrap">
+        <img src="product-bag.jpg" alt="Bharath Special Icing Sugar pack">
+      </div>
       <div class="copy">
         <h3>Bharath Special Icing Sugar</h3>
         <p>Finely milled, packed fresh, and trusted by bakeries across Kalaburagi and beyond.</p>
@@ -462,9 +433,8 @@
         <img src="qr-code.jpeg" alt="UPI QR code">
         <div>
           <div class="upi-id" id="upiIdText">7624858405@ibl</div><br>
-          <a id="phonePePayLink" class="btn" href="#" style="text-decoration:none;">Pay ₹<span id="payAmount">0</span> with PhonePe</a><br>
-          <a id="upiPayLink" class="btn secondary small" href="#" style="text-decoration:none;margin-top:10px;">Or pay with GPay / Paytm / any UPI app</a>
-          <p class="hint">On a phone, the PhonePe button opens the app directly with the amount filled in. If PhonePe isn't installed, use the other link instead.</p>
+          <a id="upiPayLink" class="btn" href="#" style="text-decoration:none;">Pay ₹<span id="payAmount">0</span> via UPI</a>
+          <p class="hint">On a phone, this opens your UPI app chooser (PhonePe, GPay, Paytm, etc.) with the amount already filled in — just pick your app and pay.</p>
         </div>
       </div>
       <p id="returnPrompt" class="hint hidden" style="color:var(--molasses);font-weight:600;">Welcome back — if your payment went through, enter the reference number below to confirm your order.</p>
@@ -755,18 +725,16 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
 
   document.getElementById('payAmount').textContent = pendingOrder.amount.toLocaleString('en-IN');
   const upiParams = `pa=${encodeURIComponent(CONFIG.UPI_ID)}&pn=${encodeURIComponent(CONFIG.UPI_NAME)}&am=${pendingOrder.amount}&cu=INR`;
-  const phonePeLink = `phonepe://pay?${upiParams}`;
   const upiLink = `upi://pay?${upiParams}`;
-  document.getElementById('phonePePayLink').href = phonePeLink;
   document.getElementById('upiPayLink').href = upiLink;
   document.getElementById('orderFormCard').classList.add('hidden');
   document.getElementById('paymentCard').classList.remove('hidden');
 
-  // On phones, try to jump straight into PhonePe automatically.
+  // On phones, try to jump straight into the UPI app chooser automatically.
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   if (isMobile) {
     awaitingReturnFromUpi = true;
-    setTimeout(()=>{ window.location.href = phonePeLink; }, 400);
+    setTimeout(()=>{ window.location.href = upiLink; }, 400);
   }
 });
 
