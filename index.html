@@ -260,39 +260,80 @@
   }
   .upi-id-badge span{font-family:'Zilla Slab',serif;font-size:1.15rem;font-weight:700;color:var(--molasses);}
 
-  /* Payment Guide Card */
-  .payment-guide{
-    background:#FFFDF9;
-    border:1px solid var(--jute);
+  /* Kid & Elder Friendly Guide Box */
+  .simple-guide-box{
+    background:#FFFFFF;
+    border:2px solid var(--jute);
+    border-radius:8px;
+    padding:18px;
+    margin-top:20px;
+  }
+  .simple-guide-title{
+    font-size:1.05rem;
+    font-weight:700;
+    color:var(--molasses);
+    margin-bottom:12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .steps-list{
+    list-style:none;
+    padding:0;
+    margin:0 0 16px 0;
+  }
+  .steps-list li{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    margin-bottom:12px;
+    font-size:.92rem;
+  }
+  .steps-list .badge{
+    background:var(--caramel);
+    color:#fff;
+    font-weight:700;
+    width:24px;
+    height:24px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:.8rem;
+    flex:none;
+    margin-top:1px;
+  }
+  .app-utr-cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+    gap:10px;
+    margin-top:12px;
+  }
+  .app-card{
+    background:#FDFBF7;
+    border:1px solid var(--line);
     border-radius:6px;
-    padding:16px;
-    margin-top:18px;
+    padding:10px 12px;
+    font-size:.84rem;
   }
-  .guide-step{
-    display:flex;gap:12px;align-items:flex-start;
-    margin-bottom:14px;font-size:.88rem;color:var(--ink);
+  .app-card strong{
+    display:block;
+    margin-bottom:4px;
+    font-size:.88rem;
   }
-  .guide-step:last-child{margin-bottom:0;}
-  .guide-num{
-    flex:none;width:24px;height:24px;border-radius:50%;
-    background:var(--molasses);color:var(--paper);
-    display:flex;align-items:center;justify-content:center;
-    font-size:.78rem;font-weight:700;
+  .app-card.phonepe{border-left:4px solid #5f259f;}
+  .app-card.gpay{border-left:4px solid #1a73e8;}
+  .app-card.paytm{border-left:4px solid #00b9f5;}
+  .code-example{
+    display:inline-block;
+    background:#ECE5D4;
+    padding:2px 6px;
+    border-radius:3px;
+    font-family:monospace;
+    font-weight:700;
+    color:var(--molasses);
+    margin-top:4px;
   }
-  .utr-highlight{
-    background:#FFF2DB;
-    border-left:3px solid var(--caramel);
-    padding:8px 12px;border-radius:3px;
-    font-size:.84rem;color:var(--molasses);margin-top:8px;
-  }
-
-  /* Video container for tutorial */
-  .video-container{
-    position:relative;width:100%;max-width:420px;
-    margin-top:14px;border-radius:6px;overflow:hidden;
-    background:#2B2418;border:1px solid var(--line);
-  }
-  .video-container video{width:100%;height:auto;display:block;}
 
   /* Timeline */
   .timeline{list-style:none;margin:18px 0 0 0;padding:0;}
@@ -458,66 +499,74 @@
       </form>
     </div>
 
-    <!-- Payment + Confirmation -->
+    <!-- Payment + confirmation -->
     <div class="card hidden" id="paymentCard">
-      <h2>Pay via UPI</h2>
-      <p class="sub">Pay <strong id="payAmountText" style="color:var(--molasses);font-size:1.2rem;">₹0</strong> to <strong>Sana Kirana</strong>.</p>
+      <h2>Step 2: Pay via UPI</h2>
+      <p class="sub">Total to pay: <strong id="payAmountText" style="color:var(--molasses);font-size:1.3rem;">₹0</strong></p>
       
       <div class="pay-box">
         <div>
           <img src="qr-code.jpeg" alt="Sana Kirana QR Code">
           <br>
-          <a href="qr-code.jpeg" download="Sana-Kirana-QR.jpeg" class="btn secondary small" style="width:180px;text-align:center;margin-top:8px;">⬇ Save QR image</a>
+          <a href="qr-code.jpeg" download="Sana-Kirana-QR.jpeg" class="btn secondary small" style="width:180px;text-align:center;margin-top:8px;">⬇ Download QR image</a>
         </div>
         
         <div class="pay-details">
-          <label style="margin-top:0;"><strong>Merchant UPI ID</strong></label>
+          <label style="margin-top:0;"><strong>Mill UPI ID (Tap copy)</strong></label>
           <div class="upi-id-badge">
             <span id="upiIdText">Q380321909@ybl</span>
             <button class="btn small secondary" type="button" id="copyUpiBtn">Copy</button>
           </div>
+          <p class="hint">Payee name will show: <strong>Sana Kirana</strong></p>
+        </div>
+      </div>
 
-          <!-- Step-by-Step Payment Instructions -->
-          <div class="payment-guide">
-            <div class="guide-step">
-              <div class="guide-num">1</div>
-              <div><strong>Save the QR:</strong> Click <strong>"Save QR image"</strong> above to download the code to your gallery (or scan it from another phone).</div>
-            </div>
-            <div class="guide-step">
-              <div class="guide-num">2</div>
-              <div><strong>Scan &amp; Pay:</strong> Open PhonePe / GPay / Paytm, tap the <strong>Scan QR icon</strong>, click the <strong>Gallery/Photo</strong> icon, select this saved image, and pay the exact amount.</div>
-            </div>
-            <div class="guide-step">
-              <div class="guide-num">3</div>
-              <div><strong>Find Reference (UTR):</strong> After payment, view payment details to find your 12-digit UTR/Reference number.</div>
-            </div>
+      <!-- Easy Guide for Everyone -->
+      <div class="simple-guide-box">
+        <div class="simple-guide-title">
+          <span>📖</span> How to pay in 3 easy steps:
+        </div>
+        <ul class="steps-list">
+          <li>
+            <span class="badge">1</span>
+            <div><strong>Scan &amp; Pay:</strong> Scan the QR code using PhonePe, Google Pay, or Paytm (or click <strong>Download QR image</strong> and choose it from your phone's photo gallery in the scanner).</div>
+          </li>
+          <li>
+            <span class="badge">2</span>
+            <div><strong>Pay the amount:</strong> Pay the exact total amount shown above.</div>
+          </li>
+          <li>
+            <span class="badge">3</span>
+            <div><strong>Copy the 12-digit number:</strong> Once paid, look at your payment receipt for the 12-digit number (UTR / Ref ID).</div>
+          </li>
+        </ul>
 
-            <div class="utr-highlight">
-              💡 <strong>How to find UTR number:</strong>
-              <br>• <strong>PhonePe:</strong> Payment details ➔ <em>"UTR: 4235XXXXXXXX"</em>
-              <br>• <strong>Google Pay:</strong> Tap transaction ➔ <em>"UPI transaction ID"</em>
-              <br>• <strong>Paytm:</strong> Tap receipt ➔ <em>"UPI Ref No."</em>
-            </div>
+        <div style="font-weight:600;font-size:.9rem;color:var(--molasses);margin-top:14px;">Where to find your 12-digit number:</div>
+        <div class="app-utr-cards">
+          <div class="app-card phonepe">
+            <strong style="color:#5f259f;">PhonePe</strong>
+            Click on <em>"View Details"</em> on the green screen. Look for:
+            <div class="code-example">UTR: 4235XXXXXXXX</div>
           </div>
-
-          <!-- Optional How-To Video Container -->
-          <div class="video-container" id="tutorialVideoBlock" style="display:none;">
-            <!-- Drop tutorial.mp4 in your repo to activate video automatically -->
-            <video controls poster="qr-code.jpeg">
-              <source src="tutorial.mp4" type="video/mp4">
-              Your browser does not support video playback.
-            </video>
+          <div class="app-card gpay">
+            <strong style="color:#1a73e8;">Google Pay</strong>
+            Tap the transaction in history. Look for:
+            <div class="code-example">UPI transaction ID</div>
           </div>
-
+          <div class="app-card paytm">
+            <strong style="color:#00b9f5;">Paytm</strong>
+            Look at the payment receipt under:
+            <div class="code-example">UPI Ref No.</div>
+          </div>
         </div>
       </div>
 
       <hr style="border:none;border-top:1px solid var(--line);margin:24px 0;">
 
-      <label><strong>Enter Payment Reference (UTR) Number</strong></label>
-      <p class="hint" style="margin-bottom:8px;">Enter the 12-digit number from your payment receipt so we can verify and confirm your order.</p>
-      <input type="text" id="paymentRef" placeholder="e.g. 423589123456" maxlength="22">
-      <button class="btn" id="confirmOrderBtn">Confirm order</button>
+      <label style="font-size:1rem;font-weight:600;color:var(--molasses);">Step 3: Enter the 12-digit UTR / Reference Number below</label>
+      <p class="hint" style="margin-bottom:8px;">Paste or type the 12-digit number here to confirm your booking.</p>
+      <input type="text" id="paymentRef" placeholder="e.g. 423589123456" maxlength="22" style="font-size:1.1rem;letter-spacing:1px;font-weight:600;">
+      <button class="btn" id="confirmOrderBtn" style="font-size:1.05rem;padding:14px 26px;">Confirm order</button>
     </div>
 
     <div class="card hidden" id="orderResultCard">
@@ -619,7 +668,6 @@
 <script>
 /* ======================= CONFIG — edit these ======================= */
 const CONFIG = {
-  // Your Google Apps Script Web App URL
   SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzp6Glit-TH9U7grY8G6sskXHZZ4Nsq0NdQKHRfdXfyOOwWqUevzsR98ETWSwn1BQU/exec",
   UPI_ID: "Q380321909@ybl",
   UPI_NAME: "Sana Kirana",
@@ -633,13 +681,12 @@ const CONFIG = {
 const STATUS_STEPS = ["Order Received","Confirmed","In Production","Dispatched","In Transit","Delivered"];
 const DEMO_MODE = !CONFIG.SCRIPT_URL;
 
-// ---------- Demo-mode local store ----------
 const demoStore = {
   settings: { pricePerKg: 75, pricePerQuintal: 7000, ownerPassword: "mullan123", fssai: "", callMeBotApiKey: "", callMeBotPhone: "" },
   orders: []
 };
 
-// ---------- Tabs ----------
+// Tabs
 document.querySelectorAll('nav.tabs .tab').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('nav.tabs .tab').forEach(b=>b.classList.remove('active'));
@@ -653,7 +700,7 @@ if (DEMO_MODE) {
   document.getElementById('setupBanner').classList.remove('hidden');
 }
 
-// ---------- API helper ----------
+// API Helpers
 async function apiGet(params) {
   if (DEMO_MODE) return demoApi('GET', params);
   const url = CONFIG.SCRIPT_URL + '?' + new URLSearchParams(params).toString();
@@ -707,7 +754,7 @@ function demoApi(method, p) {
   return { ok:false, error:'Unknown request' };
 }
 
-// ---------- Load prices on the order page ----------
+// Load prices
 let currentPrices = { pricePerKg: 0, pricePerQuintal: 0 };
 async function loadPrices() {
   const r = await apiGet({ action:'settings' });
@@ -722,7 +769,7 @@ async function loadPrices() {
 }
 loadPrices();
 
-// ---------- Delivery type toggle ----------
+// Delivery toggle
 document.querySelectorAll('#deliveryTypeGroup input').forEach(radio=>{
   radio.addEventListener('change', ()=>{
     document.querySelectorAll('#deliveryTypeGroup .opt').forEach(o=>o.classList.remove('selected'));
@@ -760,7 +807,7 @@ function updateAmountPreview(){
   document.getElementById('amountPreview').textContent = amount ? `Estimated amount: ₹${amount.toLocaleString('en-IN')} (plus delivery charge, if applicable)` : '';
 }
 
-// ---------- Copy UPI ID ----------
+// Copy UPI ID
 document.getElementById('copyUpiBtn').addEventListener('click', ()=>{
   navigator.clipboard.writeText(CONFIG.UPI_ID);
   const btn = document.getElementById('copyUpiBtn');
@@ -768,9 +815,8 @@ document.getElementById('copyUpiBtn').addEventListener('click', ()=>{
   setTimeout(()=>{ btn.textContent = 'Copy'; }, 2000);
 });
 
-// ---------- Order form submit ----------
+// Order Form Submit
 let pendingOrder = null;
-
 document.getElementById('orderForm').addEventListener('submit', function(e){
   e.preventDefault();
   const errBox = document.getElementById('orderError');
@@ -811,11 +857,19 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
   document.getElementById('payAmountText').textContent = '₹' + Number(pendingOrder.amount).toLocaleString('en-IN');
   document.getElementById('orderFormCard').classList.add('hidden');
   document.getElementById('paymentCard').classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
 document.getElementById('confirmOrderBtn').addEventListener('click', async ()=>{
   const ref = document.getElementById('paymentRef').value.trim();
   const btn = document.getElementById('confirmOrderBtn');
+
+  if (!ref) {
+    alert('Please enter your 12-digit UTR / Reference number from your payment app.');
+    document.getElementById('paymentRef').focus();
+    return;
+  }
+
   btn.disabled = true; btn.textContent = 'Placing order...';
   const r = await apiPost({ action:'createOrder', ...pendingOrder, paymentRef: ref });
   btn.disabled = false; btn.textContent = 'Confirm order';
@@ -824,6 +878,7 @@ document.getElementById('confirmOrderBtn').addEventListener('click', async ()=>{
   document.getElementById('paymentCard').classList.add('hidden');
   document.getElementById('orderResultCard').classList.remove('hidden');
   document.getElementById('resultOrderId').textContent = r.orderId;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 
   const msg = `New order from Bharath Special Icing Sugar website:\n` +
     `Order ID: ${r.orderId}\n` +
@@ -840,7 +895,7 @@ document.getElementById('confirmOrderBtn').addEventListener('click', async ()=>{
   };
 });
 
-// ---------- Track order ----------
+// Track order
 document.getElementById('trackForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
   const id = document.getElementById('trackId').value.trim();
@@ -867,7 +922,7 @@ document.getElementById('trackForm').addEventListener('submit', async (e)=>{
   resultCard.classList.remove('hidden');
 });
 
-// ---------- Owner login ----------
+// Owner login & dashboard
 let ownerPasswordCache = '';
 document.getElementById('ownerLoginBtn').addEventListener('click', async ()=>{
   const pw = document.getElementById('ownerPassword').value;
