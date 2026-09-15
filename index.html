@@ -260,6 +260,40 @@
   }
   .upi-id-badge span{font-family:'Zilla Slab',serif;font-size:1.15rem;font-weight:700;color:var(--molasses);}
 
+  /* Payment Guide Card */
+  .payment-guide{
+    background:#FFFDF9;
+    border:1px solid var(--jute);
+    border-radius:6px;
+    padding:16px;
+    margin-top:18px;
+  }
+  .guide-step{
+    display:flex;gap:12px;align-items:flex-start;
+    margin-bottom:14px;font-size:.88rem;color:var(--ink);
+  }
+  .guide-step:last-child{margin-bottom:0;}
+  .guide-num{
+    flex:none;width:24px;height:24px;border-radius:50%;
+    background:var(--molasses);color:var(--paper);
+    display:flex;align-items:center;justify-content:center;
+    font-size:.78rem;font-weight:700;
+  }
+  .utr-highlight{
+    background:#FFF2DB;
+    border-left:3px solid var(--caramel);
+    padding:8px 12px;border-radius:3px;
+    font-size:.84rem;color:var(--molasses);margin-top:8px;
+  }
+
+  /* Video container for tutorial */
+  .video-container{
+    position:relative;width:100%;max-width:420px;
+    margin-top:14px;border-radius:6px;overflow:hidden;
+    background:#2B2418;border:1px solid var(--line);
+  }
+  .video-container video{width:100%;height:auto;display:block;}
+
   /* Timeline */
   .timeline{list-style:none;margin:18px 0 0 0;padding:0;}
   .timeline li{
@@ -424,10 +458,10 @@
       </form>
     </div>
 
-    <!-- Payment + confirmation -->
+    <!-- Payment + Confirmation -->
     <div class="card hidden" id="paymentCard">
       <h2>Pay via UPI</h2>
-      <p class="sub">Pay <strong id="payAmountText" style="color:var(--molasses);font-size:1.15rem;">₹0</strong> using PhonePe, Google Pay, or Paytm.</p>
+      <p class="sub">Pay <strong id="payAmountText" style="color:var(--molasses);font-size:1.2rem;">₹0</strong> to <strong>Sana Kirana</strong>.</p>
       
       <div class="pay-box">
         <div>
@@ -437,27 +471,52 @@
         </div>
         
         <div class="pay-details">
-          <label style="margin-top:0;"><strong>Option 1: Scan QR (Fastest)</strong></label>
-          <p class="hint" style="margin-bottom:12px;">Scan the QR code directly from another phone, or click <strong>Save QR image</strong> above, open PhonePe, tap the scanner icon, and choose the photo from your gallery.</p>
-
-          <label><strong>Option 2: Pay to UPI ID</strong></label>
+          <label style="margin-top:0;"><strong>Merchant UPI ID</strong></label>
           <div class="upi-id-badge">
             <span id="upiIdText">Q380321909@ybl</span>
             <button class="btn small secondary" type="button" id="copyUpiBtn">Copy</button>
           </div>
 
-          <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
-            <a href="phonepe://" class="btn small" style="background:#5f259f;color:#fff;">Open PhonePe</a>
-            <a href="gpay://" class="btn small" style="background:#1a73e8;color:#fff;">Open GPay</a>
-            <a href="paytmmp://" class="btn small" style="background:#00b9f5;color:#fff;">Open Paytm</a>
+          <!-- Step-by-Step Payment Instructions -->
+          <div class="payment-guide">
+            <div class="guide-step">
+              <div class="guide-num">1</div>
+              <div><strong>Save the QR:</strong> Click <strong>"Save QR image"</strong> above to download the code to your gallery (or scan it from another phone).</div>
+            </div>
+            <div class="guide-step">
+              <div class="guide-num">2</div>
+              <div><strong>Scan &amp; Pay:</strong> Open PhonePe / GPay / Paytm, tap the <strong>Scan QR icon</strong>, click the <strong>Gallery/Photo</strong> icon, select this saved image, and pay the exact amount.</div>
+            </div>
+            <div class="guide-step">
+              <div class="guide-num">3</div>
+              <div><strong>Find Reference (UTR):</strong> After payment, view payment details to find your 12-digit UTR/Reference number.</div>
+            </div>
+
+            <div class="utr-highlight">
+              💡 <strong>How to find UTR number:</strong>
+              <br>• <strong>PhonePe:</strong> Payment details ➔ <em>"UTR: 4235XXXXXXXX"</em>
+              <br>• <strong>Google Pay:</strong> Tap transaction ➔ <em>"UPI transaction ID"</em>
+              <br>• <strong>Paytm:</strong> Tap receipt ➔ <em>"UPI Ref No."</em>
+            </div>
           </div>
+
+          <!-- Optional How-To Video Container -->
+          <div class="video-container" id="tutorialVideoBlock" style="display:none;">
+            <!-- Drop tutorial.mp4 in your repo to activate video automatically -->
+            <video controls poster="qr-code.jpeg">
+              <source src="tutorial.mp4" type="video/mp4">
+              Your browser does not support video playback.
+            </video>
+          </div>
+
         </div>
       </div>
 
       <hr style="border:none;border-top:1px solid var(--line);margin:24px 0;">
 
-      <label>Enter Payment Reference / UTR Number</label>
-      <input type="text" id="paymentRef" placeholder="e.g. 4235XXXXXXXX (12 digits)">
+      <label><strong>Enter Payment Reference (UTR) Number</strong></label>
+      <p class="hint" style="margin-bottom:8px;">Enter the 12-digit number from your payment receipt so we can verify and confirm your order.</p>
+      <input type="text" id="paymentRef" placeholder="e.g. 423589123456" maxlength="22">
       <button class="btn" id="confirmOrderBtn">Confirm order</button>
     </div>
 
