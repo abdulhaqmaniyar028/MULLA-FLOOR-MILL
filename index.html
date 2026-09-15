@@ -103,9 +103,6 @@
   }
   .hero-content .tagline{ animation-delay:.15s; }
 
-  /* Product showcase card: the image wrapper floats continuously,
-     and the photo itself tilts in 3D on hover — kept on separate
-     elements so the two animations don't fight over `transform`. */
   @keyframes floatY{
     0%,100%{ transform:translateY(0) rotate(-1deg); }
     50%{ transform:translateY(-10px) rotate(1deg); }
@@ -218,7 +215,7 @@
   .radio-group label.opt.selected{border-color:var(--caramel);background:#FBF0DC;}
   .radio-group input{width:auto;margin:0;}
 
-  button.btn{
+  button.btn, a.btn{
     display:inline-block;
     background:var(--molasses);
     color:var(--paper);
@@ -229,8 +226,9 @@
     font-size:.96rem;font-weight:600;
     cursor:pointer;
     margin-top:18px;
+    text-decoration:none;
   }
-  button.btn:hover{background:#2E1F14;}
+  button.btn:hover, a.btn:hover{background:#2E1F14;}
   button.btn.secondary{background:transparent;color:var(--molasses);border:1px solid var(--molasses);}
   button.btn.whatsapp{background:#3E7A4C;}
   button.btn.whatsapp:hover{background:#33643F;}
@@ -425,7 +423,7 @@
       </form>
     </div>
 
-    <!-- Payment + confirmation, shown after form submit -->
+    <!-- Payment + confirmation -->
     <div class="card hidden" id="paymentCard">
       <h2>Pay via UPI</h2>
       <p class="sub">Scan the QR code or pay to the UPI ID below, then enter your payment reference (UTR) number.</p>
@@ -433,7 +431,7 @@
         <img src="qr-code.jpeg" alt="UPI QR code">
         <div>
           <div class="upi-id" id="upiIdText">7624858405@ibl</div><br>
-          <a id="upiPayLink" class="btn" href="#" style="text-decoration:none;">Pay ₹<span id="payAmount">0</span> via UPI</a>
+          <a id="upiPayLink" class="btn" href="#">Pay ₹<span id="payAmount">0</span> via UPI</a>
           <p class="hint">On a phone, this opens your UPI app chooser (PhonePe, GPay, Paytm, etc.) with the amount already filled in — just pick your app and pay.</p>
         </div>
       </div>
@@ -536,13 +534,13 @@
 </main>
 
 <footer class="wrap">
-  Bharath Special Icing Sugar · Sugar powder milling &amp; supply, Kalaburagi (Gulbarga), Karnataka
+  Bharath Special Icing Sugar · Sugar powder milling & supply, Kalaburagi (Gulbarga), Karnataka
 </footer>
 
 <script>
 /* ======================= CONFIG — edit these ======================= */
 const CONFIG = {
-  // Paste your Google Apps Script Web App URL here (see SETUP-GUIDE.md). Leave blank to run in demo mode.
+  // Your deployed Google Apps Script Web App URL
   SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzp6Glit-TH9U7grY8G6sskXHZZ4Nsq0NdQKHRfdXfyOOwWqUevzsR98ETWSwn1BQU/exec",
   UPI_ID: "7624858405@ibl",
   UPI_NAME: "Abdul Hadi",
@@ -556,7 +554,7 @@ const CONFIG = {
 const STATUS_STEPS = ["Order Received","Confirmed","In Production","Dispatched","In Transit","Delivered"];
 const DEMO_MODE = !CONFIG.SCRIPT_URL;
 
-// ---------- Demo-mode local store (used only if no SCRIPT_URL is set) ----------
+// ---------- Demo-mode local store ----------
 const demoStore = {
   settings: { pricePerKg: 75, pricePerQuintal: 7000, ownerPassword: "mullan123", fssai: "", callMeBotApiKey: "", callMeBotPhone: "" },
   orders: []
@@ -588,7 +586,6 @@ async function apiPost(body) {
   const res = await fetch(CONFIG.SCRIPT_URL, { method:'POST', body: JSON.stringify(body) });
   return res.json();
 }
-// Minimal in-browser fallback so the site is clickable before the backend is wired up.
 function demoApi(method, p) {
   if (method === 'GET') {
     if (p.action === 'settings') return { ok:true, pricePerKg: demoStore.settings.pricePerKg, pricePerQuintal: demoStore.settings.pricePerQuintal, fssai: demoStore.settings.fssai };
@@ -686,6 +683,8 @@ function updateAmountPreview(){
 
 // ---------- Order form submit ----------
 let pendingOrder = null;
+let awaitingReturnFromUpi = false;
+
 document.getElementById('orderForm').addEventListener('submit', function(e){
   e.preventDefault();
   const errBox = document.getElementById('orderError');
@@ -723,24 +722,22 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
   const price = unit==='Quintal' ? currentPrices.pricePerQuintal : currentPrices.pricePerKg;
   pendingOrder = { name, phone, deliveryType, city, address, quantity:qty, unit, notes, amount: qty*price };
 
-  document.getElementById('payAmount').textContent = pendingOrder.amount.toLocaleString('en-IN');
-  const upiParams = `pa=${encodeURIComponent(CONFIG.UPI_ID)}&pn=${encodeURIComponent(CONFIG.UPI_NAME)}&am=${pendingOrder.amount}&cu=INR`;
-  const upiLink = `upi://pay?${upiParams}`;
-  document.getElementById('upiPayLink').href = upiLink;
+  // Set formatted display and strict 2-decimal format for PhonePe/UPI
+  document.getElementById('payAmount').textContent = Number(pendingOrder.amount).toLocaleString('en-IN');
+  const formattedAmount = Number(pendingOrder.amount).toFixed(2);
+  const upiLink = `upi://pay?pa=${CONFIG.UPI_ID}&pn=${encodeURIComponent(CONFIG.UPI_NAME)}&am=${formattedAmount}&cu=INR&tn=${encodeURIComponent('Bharath Sugar Order')}`;
+
+  const payBtn = document.getElementById('upiPayLink');
+  payBtn.href = upiLink;
+  payBtn.onclick = () => {
+    awaitingReturnFromUpi = true;
+  };
+
   document.getElementById('orderFormCard').classList.add('hidden');
   document.getElementById('paymentCard').classList.remove('hidden');
-
-  // On phones, try to jump straight into the UPI app chooser automatically.
-  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  if (isMobile) {
-    awaitingReturnFromUpi = true;
-    setTimeout(()=>{ window.location.href = upiLink; }, 400);
-  }
 });
 
-// Detect when the customer comes back to this tab after leaving to pay (e.g. in PhonePe/GPay),
-// and prompt them to confirm — the closest a free, static site can get to an automatic payment redirect.
-let awaitingReturnFromUpi = false;
+// Prompt for UTR when customer returns after paying
 document.addEventListener('visibilitychange', ()=>{
   if (!document.hidden && awaitingReturnFromUpi && !document.getElementById('paymentCard').classList.contains('hidden')) {
     awaitingReturnFromUpi = false;
@@ -905,3 +902,5 @@ function renderOrders(orders){
 </script>
 </body>
 </html>
+
+
