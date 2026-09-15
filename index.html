@@ -430,7 +430,7 @@
       <div class="pay-box">
         <img src="qr-code.jpeg" alt="UPI QR code">
         <div>
-          <div class="upi-id" id="upiIdText">7624858405@ibl</div><br>
+          <div class="upi-id" id="upiIdText">Q380321909@ybl</div><br>
           <a id="upiPayLink" class="btn" href="#">Pay ₹<span id="payAmount">0</span> via UPI</a>
           <p class="hint">On a phone, this opens your UPI app chooser (PhonePe, GPay, Paytm, etc.) with the amount already filled in — just pick your app and pay.</p>
         </div>
@@ -534,16 +534,16 @@
 </main>
 
 <footer class="wrap">
-  Bharath Special Icing Sugar · Sugar powder milling & supply, Kalaburagi (Gulbarga), Karnataka
+  Bharath Special Icing Sugar · Sugar powder milling &amp; supply, Kalaburagi (Gulbarga), Karnataka
 </footer>
 
 <script>
 /* ======================= CONFIG — edit these ======================= */
 const CONFIG = {
-  // Your deployed Google Apps Script Web App URL
+  // Your Google Apps Script Web App URL
   SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzp6Glit-TH9U7grY8G6sskXHZZ4Nsq0NdQKHRfdXfyOOwWqUevzsR98ETWSwn1BQU/exec",
-  UPI_ID: "7624858405@ibl",
-  UPI_NAME: "Abdul Hadi",
+  UPI_ID: "Q380321909@ybl",
+  UPI_NAME: "Sana Kirana",
   OWNER_WHATSAPP: "917624858405",
   MIN_KG_LOCAL: 10,
   MIN_QUINTAL_OUTSTATION: 1,
@@ -722,10 +722,10 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
   const price = unit==='Quintal' ? currentPrices.pricePerQuintal : currentPrices.pricePerKg;
   pendingOrder = { name, phone, deliveryType, city, address, quantity:qty, unit, notes, amount: qty*price };
 
-  // Set formatted display and strict 2-decimal format for PhonePe/UPI
+  // Set formatted display and PhonePe Merchant UPI intent
   document.getElementById('payAmount').textContent = Number(pendingOrder.amount).toLocaleString('en-IN');
   const formattedAmount = Number(pendingOrder.amount).toFixed(2);
-  const upiLink = `upi://pay?pa=${CONFIG.UPI_ID}&pn=${encodeURIComponent(CONFIG.UPI_NAME)}&am=${formattedAmount}&cu=INR&tn=${encodeURIComponent('Bharath Sugar Order')}`;
+  const upiLink = `upi://pay?pa=${CONFIG.UPI_ID}&pn=${encodeURIComponent(CONFIG.UPI_NAME)}&am=${formattedAmount}&cu=INR&mode=02&purpose=00`;
 
   const payBtn = document.getElementById('upiPayLink');
   payBtn.href = upiLink;
@@ -902,5 +902,3 @@ function renderOrders(orders){
 </script>
 </body>
 </html>
-
-
