@@ -93,7 +93,6 @@
     .hero-content h1{font-size:1.6rem;}
   }
 
-  /* Entrance animation for hero text */
   @keyframes fadeInUp{
     from{ opacity:0; transform:translateY(18px); }
     to{ opacity:1; transform:translateY(0); }
@@ -221,15 +220,15 @@
     color:var(--paper);
     border:none;
     border-radius:3px;
-    padding:12px 22px;
+    padding:11px 20px;
     font-family:'Work Sans',sans-serif;
-    font-size:.96rem;font-weight:600;
+    font-size:.94rem;font-weight:600;
     cursor:pointer;
-    margin-top:18px;
+    margin-top:14px;
     text-decoration:none;
   }
   button.btn:hover, a.btn:hover{background:#2E1F14;}
-  button.btn.secondary{background:transparent;color:var(--molasses);border:1px solid var(--molasses);}
+  button.btn.secondary, a.btn.secondary{background:transparent;color:var(--molasses);border:1px solid var(--molasses);}
   button.btn.whatsapp{background:#3E7A4C;}
   button.btn.whatsapp:hover{background:#33643F;}
   button.btn.small{padding:7px 14px;font-size:.85rem;margin-top:0;}
@@ -252,12 +251,14 @@
   .order-id-box .id{font-family:'Zilla Slab',serif;font-size:1.4rem;letter-spacing:.02em;}
 
   .pay-box{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;}
-  .pay-box img{width:170px;border:1px solid var(--line);border-radius:4px;}
-  .pay-box .upi-id{
-    font-family:'Zilla Slab',serif;font-size:1.15rem;color:var(--molasses);
+  .pay-box img{width:180px;border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow);}
+  .pay-details{flex:1;min-width:260px;}
+  .upi-id-badge{
+    display:flex;align-items:center;justify-content:space-between;
     background:#FBF0DC;border:1px dashed var(--caramel-dark);
-    padding:8px 14px;border-radius:3px;display:inline-block;margin:6px 0;
+    padding:8px 14px;border-radius:4px;margin:8px 0;max-width:320px;
   }
+  .upi-id-badge span{font-family:'Zilla Slab',serif;font-size:1.15rem;font-weight:700;color:var(--molasses);}
 
   /* Timeline */
   .timeline{list-style:none;margin:18px 0 0 0;padding:0;}
@@ -426,18 +427,37 @@
     <!-- Payment + confirmation -->
     <div class="card hidden" id="paymentCard">
       <h2>Pay via UPI</h2>
-      <p class="sub">Scan the QR code or pay to the UPI ID below, then enter your payment reference (UTR) number.</p>
+      <p class="sub">Pay <strong id="payAmountText" style="color:var(--molasses);font-size:1.15rem;">₹0</strong> using PhonePe, Google Pay, or Paytm.</p>
+      
       <div class="pay-box">
-        <img src="qr-code.jpeg" alt="UPI QR code">
         <div>
-          <div class="upi-id" id="upiIdText">Q380321909@ybl</div><br>
-          <a id="upiPayLink" class="btn" href="#">Pay ₹<span id="payAmount">0</span> via UPI</a>
-          <p class="hint">On a phone, this opens your UPI app chooser (PhonePe, GPay, Paytm, etc.) with the amount already filled in — just pick your app and pay.</p>
+          <img src="qr-code.jpeg" alt="Sana Kirana QR Code">
+          <br>
+          <a href="qr-code.jpeg" download="Sana-Kirana-QR.jpeg" class="btn secondary small" style="width:180px;text-align:center;margin-top:8px;">⬇ Save QR image</a>
+        </div>
+        
+        <div class="pay-details">
+          <label style="margin-top:0;"><strong>Option 1: Scan QR (Fastest)</strong></label>
+          <p class="hint" style="margin-bottom:12px;">Scan the QR code directly from another phone, or click <strong>Save QR image</strong> above, open PhonePe, tap the scanner icon, and choose the photo from your gallery.</p>
+
+          <label><strong>Option 2: Pay to UPI ID</strong></label>
+          <div class="upi-id-badge">
+            <span id="upiIdText">Q380321909@ybl</span>
+            <button class="btn small secondary" type="button" id="copyUpiBtn">Copy</button>
+          </div>
+
+          <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;">
+            <a href="phonepe://" class="btn small" style="background:#5f259f;color:#fff;">Open PhonePe</a>
+            <a href="gpay://" class="btn small" style="background:#1a73e8;color:#fff;">Open GPay</a>
+            <a href="paytmmp://" class="btn small" style="background:#00b9f5;color:#fff;">Open Paytm</a>
+          </div>
         </div>
       </div>
-      <p id="returnPrompt" class="hint hidden" style="color:var(--molasses);font-weight:600;">Welcome back — if your payment went through, enter the reference number below to confirm your order.</p>
-      <label>Payment reference / UTR number</label>
-      <input type="text" id="paymentRef" placeholder="Enter after completing payment">
+
+      <hr style="border:none;border-top:1px solid var(--line);margin:24px 0;">
+
+      <label>Enter Payment Reference / UTR Number</label>
+      <input type="text" id="paymentRef" placeholder="e.g. 4235XXXXXXXX (12 digits)">
       <button class="btn" id="confirmOrderBtn">Confirm order</button>
     </div>
 
@@ -681,9 +701,16 @@ function updateAmountPreview(){
   document.getElementById('amountPreview').textContent = amount ? `Estimated amount: ₹${amount.toLocaleString('en-IN')} (plus delivery charge, if applicable)` : '';
 }
 
+// ---------- Copy UPI ID ----------
+document.getElementById('copyUpiBtn').addEventListener('click', ()=>{
+  navigator.clipboard.writeText(CONFIG.UPI_ID);
+  const btn = document.getElementById('copyUpiBtn');
+  btn.textContent = 'Copied!';
+  setTimeout(()=>{ btn.textContent = 'Copy'; }, 2000);
+});
+
 // ---------- Order form submit ----------
 let pendingOrder = null;
-let awaitingReturnFromUpi = false;
 
 document.getElementById('orderForm').addEventListener('submit', function(e){
   e.preventDefault();
@@ -722,28 +749,9 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
   const price = unit==='Quintal' ? currentPrices.pricePerQuintal : currentPrices.pricePerKg;
   pendingOrder = { name, phone, deliveryType, city, address, quantity:qty, unit, notes, amount: qty*price };
 
-  // Set formatted display and PhonePe Merchant UPI intent
-  document.getElementById('payAmount').textContent = Number(pendingOrder.amount).toLocaleString('en-IN');
-  const formattedAmount = Number(pendingOrder.amount).toFixed(2);
-  const upiLink = `upi://pay?pa=${CONFIG.UPI_ID}&pn=${encodeURIComponent(CONFIG.UPI_NAME)}&am=${formattedAmount}&cu=INR&mode=02&purpose=00`;
-
-  const payBtn = document.getElementById('upiPayLink');
-  payBtn.href = upiLink;
-  payBtn.onclick = () => {
-    awaitingReturnFromUpi = true;
-  };
-
+  document.getElementById('payAmountText').textContent = '₹' + Number(pendingOrder.amount).toLocaleString('en-IN');
   document.getElementById('orderFormCard').classList.add('hidden');
   document.getElementById('paymentCard').classList.remove('hidden');
-});
-
-// Prompt for UTR when customer returns after paying
-document.addEventListener('visibilitychange', ()=>{
-  if (!document.hidden && awaitingReturnFromUpi && !document.getElementById('paymentCard').classList.contains('hidden')) {
-    awaitingReturnFromUpi = false;
-    document.getElementById('returnPrompt').classList.remove('hidden');
-    document.getElementById('paymentRef').focus();
-  }
 });
 
 document.getElementById('confirmOrderBtn').addEventListener('click', async ()=>{
