@@ -20,6 +20,7 @@
     --ok:#4C7A4A;
     --wait:#B8862F;
     --done:#3E2A1C;
+    --danger:#B33A3A;
     --shadow: 0 1px 0 rgba(43,36,24,0.06);
   }
   *{box-sizing:border-box;}
@@ -161,7 +162,6 @@
   .panel{display:none;}
   .panel.active{display:block;}
 
-  /* Updated Modern Rate Card */
   .today-price-card{
     background:var(--paper);
     border:1px solid var(--line);
@@ -192,7 +192,6 @@
     font-weight:600;
   }
 
-  /* Price History Mini Log */
   .history-box{
     margin-top:12px;
     width:100%;
@@ -219,7 +218,6 @@
   }
   .history-table th{color:var(--ink-soft);font-weight:600;}
 
-  /* Cards / forms */
   .card{
     background:var(--paper);
     border:1px solid var(--line);
@@ -274,6 +272,8 @@
   }
   button.btn:hover, a.btn:hover{background:#2E1F14;}
   button.btn.secondary, a.btn.secondary{background:transparent;color:var(--molasses);border:1px solid var(--molasses);}
+  button.btn.danger{background:var(--danger);color:#fff;}
+  button.btn.danger:hover{background:#8C2929;}
   button.btn.whatsapp{background:#3E7A4C;}
   button.btn.whatsapp:hover{background:#33643F;}
   button.btn.small{padding:7px 14px;font-size:.85rem;margin-top:0;}
@@ -380,6 +380,18 @@
     margin-top:4px;
   }
 
+  /* Policy Box */
+  .policy-box{
+    background:#FFF9E6;
+    border:1px solid #E6D3A3;
+    border-radius:6px;
+    padding:14px 16px;
+    margin-top:18px;
+    font-size:.86rem;
+    color:var(--molasses);
+  }
+  .policy-box strong{color:#2B2418;}
+
   /* Timeline */
   .timeline{list-style:none;margin:18px 0 0 0;padding:0;}
   .timeline li{
@@ -397,8 +409,10 @@
   }
   .timeline li.done::before{background:var(--molasses);border-color:var(--molasses);}
   .timeline li.current::before{background:var(--caramel);border-color:var(--caramel);}
+  .timeline li.cancelled::before{background:var(--danger);border-color:var(--danger);}
   .timeline li .step-title{font-weight:600;color:var(--ink-soft);}
   .timeline li.done .step-title, .timeline li.current .step-title{color:var(--molasses);}
+  .timeline li.cancelled .step-title{color:var(--danger);}
   .timeline li .step-time{font-size:.8rem;color:var(--ink-soft);margin-top:2px;}
 
   /* Owner dashboard table */
@@ -417,6 +431,7 @@
     background:#EFE6CE;color:var(--wait);
   }
   .status-pill.delivered{background:#DEEBDB;color:var(--ok);}
+  .status-pill.cancelled{background:#FBE9E4;color:var(--danger);}
 
   footer{
     border-top:1px solid var(--line);
@@ -473,7 +488,7 @@
       </div>
     </div>
 
-    <!-- Today's Rate & Price Stability Log -->
+    <!-- Rate Card -->
     <div class="today-price-card">
       <div>
         <div style="font-size:.78rem;text-transform:uppercase;color:var(--ink-soft);letter-spacing:.05em;font-weight:600;">Today's Rate</div>
@@ -484,10 +499,8 @@
       </div>
       <div style="font-size:.85rem;color:var(--ink-soft);text-align:right;">
         <strong>Min Order:</strong> 10 kg (Kalaburagi) · 1 Qtl (Outstation)
-        <div id="fssaiLine" style="margin-top:2px;"></div>
       </div>
 
-      <!-- Rate History (Fluctuates only across long periods) -->
       <details class="history-box">
         <summary>View Rate History &amp; Stability Log</summary>
         <table class="history-table">
@@ -646,6 +659,13 @@
         </div>
       </div>
 
+      <!-- Cancellation Policy Highlight -->
+      <div class="policy-box">
+        <strong>📋 Order Cancellation &amp; Refund Policy:</strong><br>
+        • <strong>Before Dispatch:</strong> You can cancel anytime from the Track page for a <strong>100% Full Refund</strong>.<br>
+        • <strong>After Dispatch:</strong> Cancellation is <strong>NOT allowed (0% Refund)</strong> once goods are handed over to the transport.
+      </div>
+
       <hr style="border:none;border-top:1px solid var(--line);margin:24px 0;">
 
       <label style="font-size:1rem;font-weight:600;color:var(--molasses);">Step 3: Enter the 12-digit UTR / Reference Number below</label>
@@ -683,7 +703,7 @@
     <div class="card hidden" id="trackResultCard"></div>
   </section>
 
-  <!-- STEALTH OWNER PANEL (Hidden from top tabs) -->
+  <!-- STEALTH OWNER PANEL -->
   <section id="owner" class="panel">
     <div class="card" id="ownerLoginCard">
       <h2>Owner Portal</h2>
@@ -704,15 +724,6 @@
         </div>
         <button class="btn small" id="savePricingBtn" style="margin-top:16px;">Save pricing</button>
         <span id="pricingSaved" class="hint hidden" style="color:var(--ok);margin-left:10px;">Saved.</span>
-      </div>
-
-      <div class="card">
-        <h2>Business details</h2>
-        <p class="sub">Shown near the top of the Order page. Leave blank while renewal is pending.</p>
-        <label>FSSAI License No.</label>
-        <input type="text" id="settingFssai" placeholder="Leave blank if not yet renewed">
-        <button class="btn small" id="saveBusinessBtn" style="margin-top:16px;">Save</button>
-        <span id="businessSaved" class="hint hidden" style="color:var(--ok);margin-left:10px;">Saved.</span>
       </div>
 
       <div class="card">
@@ -766,11 +777,11 @@ const STATUS_STEPS = ["Order Received","Confirmed","In Production","Dispatched",
 const DEMO_MODE = !CONFIG.SCRIPT_URL;
 
 const demoStore = {
-  settings: { pricePerKg: 75, pricePerQuintal: 7000, ownerPassword: "mullan123", fssai: "", callMeBotApiKey: "", callMeBotPhone: "" },
+  settings: { pricePerKg: 75, pricePerQuintal: 7000, ownerPassword: "mullan123", callMeBotApiKey: "", callMeBotPhone: "" },
   orders: []
 };
 
-// Tabs (Only Order and Track visible)
+// Tabs
 document.querySelectorAll('nav.tabs .tab').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('nav.tabs .tab').forEach(b=>b.classList.remove('active'));
@@ -814,7 +825,7 @@ async function apiPost(body) {
 }
 function demoApi(method, p) {
   if (method === 'GET') {
-    if (p.action === 'settings') return { ok:true, pricePerKg: demoStore.settings.pricePerKg, pricePerQuintal: demoStore.settings.pricePerQuintal, fssai: demoStore.settings.fssai };
+    if (p.action === 'settings') return { ok:true, pricePerKg: demoStore.settings.pricePerKg, pricePerQuintal: demoStore.settings.pricePerQuintal };
     if (p.action === 'track') {
       const o = demoStore.orders.find(o=>o.OrderID===p.id);
       return o ? { ok:true, order:o } : { ok:false, error:'Order not found (demo mode)' };
@@ -832,6 +843,15 @@ function demoApi(method, p) {
       demoStore.orders.push(order);
       return { ok:true, orderId:id, amount };
     }
+    if (p.action === 'cancelOrder') {
+      const o = demoStore.orders.find(o=>o.OrderID===p.orderId);
+      if (!o) return { ok:false, error:'Order not found' };
+      if (['Dispatched', 'In Transit', 'Delivered'].includes(o.Status)) {
+        return { ok:false, error:'Order has already been dispatched. Cancellation not allowed.' };
+      }
+      o.Status = 'Cancelled';
+      return { ok:true };
+    }
     if (p.action === 'updateOrder') {
       if (p.password !== demoStore.settings.ownerPassword) return { ok:false, error:'Wrong password' };
       const o = demoStore.orders.find(o=>o.OrderID===p.orderId);
@@ -845,7 +865,6 @@ function demoApi(method, p) {
       if (p.pricePerKg) demoStore.settings.pricePerKg = Number(p.pricePerKg);
       if (p.pricePerQuintal) demoStore.settings.pricePerQuintal = Number(p.pricePerQuintal);
       if (p.newPassword) demoStore.settings.ownerPassword = p.newPassword;
-      if (p.fssai !== undefined) demoStore.settings.fssai = p.fssai;
       if (p.callMeBotApiKey !== undefined) demoStore.settings.callMeBotApiKey = p.callMeBotApiKey;
       if (p.callMeBotPhone !== undefined) demoStore.settings.callMeBotPhone = p.callMeBotPhone;
       return { ok:true };
@@ -864,9 +883,6 @@ async function loadPrices() {
     document.getElementById('priceQtlDisplay').textContent = '₹' + Number(r.pricePerQuintal).toLocaleString('en-IN') + ' / quintal (100 kg)';
     document.getElementById('histCurrentKg').textContent = '₹' + r.pricePerKg;
     document.getElementById('histCurrentQtl').textContent = '₹' + Number(r.pricePerQuintal).toLocaleString('en-IN');
-    document.getElementById('fssaiLine').textContent = r.fssai
-      ? `FSSAI Lic. No. ${r.fssai}`
-      : 'FSSAI renewal in progress';
   }
 }
 loadPrices();
@@ -983,10 +999,14 @@ document.getElementById('confirmOrderBtn').addEventListener('click', async ()=>{
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
-// Track order
+// Track & Cancel Order
 document.getElementById('trackForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
   const id = document.getElementById('trackId').value.trim();
+  loadTrackDetails(id);
+});
+
+async function loadTrackDetails(id) {
   const errBox = document.getElementById('trackError');
   const resultCard = document.getElementById('trackResultCard');
   errBox.classList.add('hidden'); resultCard.classList.add('hidden');
@@ -995,20 +1015,67 @@ document.getElementById('trackForm').addEventListener('submit', async (e)=>{
   if (!r.ok) { errBox.textContent = r.error || 'Order not found.'; errBox.classList.remove('hidden'); return; }
 
   const o = r.order;
+  const isCancelled = o.Status === 'Cancelled';
+  const isDispatched = ['Dispatched', 'In Transit', 'Delivered'].includes(o.Status);
   const stepIndex = STATUS_STEPS.indexOf(o.Status);
+
   let html = `<h2>Order ${o.OrderID}</h2>
     <p class="sub">${o.Name} · ${o.Quantity} ${o.Unit} · ${o.DeliveryType}${o.DeliveryType==='Delivery' ? ' to '+o.City : ''}</p>`;
-  if (o.DeliveryCharge) html += `<p><strong>Delivery charge:</strong> ₹${o.DeliveryCharge}</p>`;
-  if (o.ETA) html += `<p><strong>Expected delivery:</strong> ${o.ETA}</p>`;
-  html += '<ul class="timeline">';
-  STATUS_STEPS.forEach((step, i)=>{
-    let cls = i < stepIndex ? 'done' : (i===stepIndex ? 'current' : '');
-    html += `<li class="${cls}"><div class="step-title">${step}</div></li>`;
-  });
-  html += '</ul>';
+  
+  if (isCancelled) {
+    html += `<div style="background:#FBE9E4;border:1px solid #D98E80;color:var(--danger);padding:10px 14px;border-radius:4px;font-weight:600;margin:12px 0;">
+      ❌ This order has been CANCELLED. Your 100% refund is being processed to your original UPI payment method.
+    </div>`;
+  } else {
+    if (o.DeliveryCharge) html += `<p><strong>Delivery charge:</strong> ₹${o.DeliveryCharge}</p>`;
+    if (o.ETA) html += `<p><strong>Expected delivery:</strong> ${o.ETA}</p>`;
+    html += '<ul class="timeline">';
+    STATUS_STEPS.forEach((step, i)=>{
+      let cls = i < stepIndex ? 'done' : (i===stepIndex ? 'current' : '');
+      html += `<li class="${cls}"><div class="step-title">${step}</div></li>`;
+    });
+    html += '</ul>';
+
+    // Cancellation Action Zone
+    html += `<div style="margin-top:22px;border-top:1px dashed var(--line);padding-top:16px;">`;
+    if (!isDispatched) {
+      html += `
+        <p class="hint" style="color:var(--molasses);margin-bottom:8px;">Need to cancel? You can cancel right now for a <strong>full 100% refund</strong> before the order is dispatched.</p>
+        <button class="btn danger small" id="custCancelBtn">Cancel Order &amp; Request Full Refund</button>
+      `;
+    } else {
+      html += `
+        <div style="background:#F4EFEB;padding:10px 14px;border-radius:4px;font-size:.85rem;color:var(--ink-soft);">
+          🔒 <strong>Cancellation Locked:</strong> Your order has been dispatched via transport. As per policy, cancellations and refunds are not available once goods are on the road.
+        </div>
+      `;
+    }
+    html += `</div>`;
+  }
+
   resultCard.innerHTML = html;
   resultCard.classList.remove('hidden');
-});
+
+  const cancelBtn = document.getElementById('custCancelBtn');
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', async ()=>{
+      const confirmAction = confirm('Are you sure you want to cancel this order? You will receive a 100% full refund.');
+      if (!confirmAction) return;
+
+      cancelBtn.disabled = true;
+      cancelBtn.textContent = 'Cancelling...';
+      const res = await apiPost({ action:'cancelOrder', orderId: o.OrderID });
+      if (res.ok) {
+        alert('Your order has been cancelled successfully. Full refund initiated.');
+        loadTrackDetails(o.OrderID);
+      } else {
+        alert(res.error || 'Unable to cancel order.');
+        cancelBtn.disabled = false;
+        cancelBtn.textContent = 'Cancel Order & Request Full Refund';
+      }
+    });
+  }
+}
 
 // Stealth Owner Login
 let ownerPasswordCache = '';
@@ -1023,22 +1090,9 @@ document.getElementById('ownerLoginBtn').addEventListener('click', async ()=>{
   document.getElementById('ownerDashboard').classList.remove('hidden');
   document.getElementById('settingPriceKg').value = r.settings.pricePerKg;
   document.getElementById('settingPriceQtl').value = r.settings.pricePerQuintal;
-  document.getElementById('settingFssai').value = r.settings.fssai || '';
   document.getElementById('settingCallMeBotKey').value = r.settings.callMeBotApiKey || '';
   document.getElementById('settingCallMeBotPhone').value = r.settings.callMeBotPhone || '';
   renderOrders(r.orders);
-});
-
-document.getElementById('saveBusinessBtn').addEventListener('click', async ()=>{
-  const fssai = document.getElementById('settingFssai').value.trim();
-  const r = await apiPost({ action:'updateSettings', password: ownerPasswordCache, fssai });
-  if (r.ok) {
-    const saved = document.getElementById('businessSaved');
-    saved.classList.remove('hidden');
-    setTimeout(()=>saved.classList.add('hidden'), 2000);
-  } else {
-    alert('Could not save: ' + (r.error||''));
-  }
 });
 
 document.getElementById('saveAlertsBtn').addEventListener('click', async ()=>{
@@ -1078,7 +1132,8 @@ function renderOrders(orders){
   tbody.innerHTML = '';
   orders.forEach(o=>{
     const tr = document.createElement('tr');
-    const statusOptions = STATUS_STEPS.map(s=>`<option value="${s}" ${s===o.Status?'selected':''}>${s}</option>`).join('');
+    const allStatuses = [...STATUS_STEPS, "Cancelled"];
+    const statusOptions = allStatuses.map(s=>`<option value="${s}" ${s===o.Status?'selected':''}>${s}</option>`).join('');
     tr.innerHTML = `
       <td>${o.OrderID}<br><span class="hint">${new Date(o.CreatedAt).toLocaleDateString('en-IN')}</span></td>
       <td>${o.Name}<br><span class="hint">${o.Phone}</span></td>
