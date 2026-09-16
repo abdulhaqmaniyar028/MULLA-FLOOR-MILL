@@ -40,7 +40,6 @@
   a{color:var(--caramel-dark);}
   .wrap{max-width:900px;margin:0 auto;padding:0 20px;}
 
-  /* Top bar */
   header.topbar{
     background:var(--molasses);
     color:var(--paper);
@@ -48,7 +47,6 @@
   .brand h1{color:var(--paper);font-size:1.7rem;margin:0;}
   .brand .tagline{color:var(--jute);margin:2px 0 0 0;font-size:.92rem;}
 
-  /* Hero banner */
   .hero{
     position:relative;
     height:280px;
@@ -286,7 +284,6 @@
   }
   .hidden{display:none !important;}
 
-  /* Order confirmation */
   .order-id-box{
     background:var(--molasses);color:var(--paper);
     border-radius:4px;padding:18px 20px;
@@ -305,7 +302,6 @@
   }
   .upi-id-badge span{font-family:'Zilla Slab',serif;font-size:1.15rem;font-weight:700;color:var(--molasses);}
 
-  /* Kid & Elder Friendly Guide Box */
   .simple-guide-box{
     background:#FFFFFF;
     border:2px solid var(--jute);
@@ -380,7 +376,6 @@
     margin-top:4px;
   }
 
-  /* Policy Box */
   .policy-box{
     background:#FFF9E6;
     border:1px solid #E6D3A3;
@@ -392,7 +387,6 @@
   }
   .policy-box strong{color:#2B2418;}
 
-  /* Timeline */
   .timeline{list-style:none;margin:18px 0 0 0;padding:0;}
   .timeline li{
     position:relative;
@@ -415,7 +409,6 @@
   .timeline li.cancelled .step-title{color:var(--danger);}
   .timeline li .step-time{font-size:.8rem;color:var(--ink-soft);margin-top:2px;}
 
-  /* Owner dashboard table */
   table.orders{width:100%;border-collapse:collapse;font-size:.87rem;}
   table.orders th, table.orders td{
     border-bottom:1px solid var(--line);
@@ -455,7 +448,7 @@
 <body>
 
 <div id="setupBanner" class="setup-banner hidden">
-  Setup needed: open index.html and set SCRIPT_URL in the CONFIG section at the top of the script — see SETUP-GUIDE.md.
+  Setup needed: open index.html and set SCRIPT_URL in the CONFIG section at the top of the script.
 </div>
 
 <div class="hero">
@@ -501,7 +494,7 @@
         <strong>Min Order:</strong> 10 kg (Kalaburagi) · 1 Qtl (Outstation)
       </div>
 
-      <details class="history-box">
+      <details class="history-box" id="historyDetailsBox">
         <summary>View Rate History &amp; Stability Log</summary>
         <table class="history-table">
           <thead>
@@ -512,25 +505,8 @@
               <th>Status</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>Current (2025–Present)</td>
-              <td id="histCurrentKg">₹75</td>
-              <td id="histCurrentQtl">₹7,000</td>
-              <td><span style="color:var(--ok);font-weight:600;">Active Rate</span></td>
-            </tr>
-            <tr>
-              <td>Previous (2023–2024)</td>
-              <td>₹70</td>
-              <td>₹6,600</td>
-              <td>Revised</td>
-            </tr>
-            <tr>
-              <td>Base Period (2021–2022)</td>
-              <td>₹65</td>
-              <td>₹6,200</td>
-              <td>Historical</td>
-            </tr>
+          <tbody id="rateHistoryBody">
+            <!-- Dynamically populated from Owner settings -->
           </tbody>
         </table>
       </details>
@@ -716,14 +692,36 @@
 
     <div class="hidden" id="ownerDashboard">
       <div class="card">
-        <h2>Pricing</h2>
-        <p class="sub">Update anytime — changes will immediately update the live rates on the website.</p>
+        <h2>Live Pricing</h2>
+        <p class="sub">Set the current rate charged to customers right now.</p>
         <div class="row">
-          <div><label>Price per Kg (₹)</label><input type="number" id="settingPriceKg"></div>
-          <div><label>Price per Quintal (₹)</label><input type="number" id="settingPriceQtl"></div>
+          <div><label>Today's Price per Kg (₹)</label><input type="number" id="settingPriceKg"></div>
+          <div><label>Today's Price per Quintal (₹)</label><input type="number" id="settingPriceQtl"></div>
         </div>
-        <button class="btn small" id="savePricingBtn" style="margin-top:16px;">Save pricing</button>
-        <span id="pricingSaved" class="hint hidden" style="color:var(--ok);margin-left:10px;">Saved.</span>
+
+        <h3 style="margin-top:24px;font-size:1.1rem;">Rate History (Shown to Customers)</h3>
+        <p class="sub">Enter older prices here when you know the exact real numbers, or leave blank if not needed.</p>
+        
+        <div style="background:#F6F0E4;padding:14px;border-radius:4px;margin-bottom:12px;">
+          <strong>Previous Period (e.g. 2023–2024):</strong>
+          <div class="row" style="margin-top:6px;">
+            <div><label>Period Label</label><input type="text" id="hist1Label" placeholder="e.g. 2023–2024"></div>
+            <div><label>Rate / Kg (₹)</label><input type="text" id="hist1Kg" placeholder="e.g. 70"></div>
+            <div><label>Rate / Qtl (₹)</label><input type="text" id="hist1Qtl" placeholder="e.g. 6600"></div>
+          </div>
+        </div>
+
+        <div style="background:#F6F0E4;padding:14px;border-radius:4px;margin-bottom:12px;">
+          <strong>Older Period (e.g. 2021–2022):</strong>
+          <div class="row" style="margin-top:6px;">
+            <div><label>Period Label</label><input type="text" id="hist2Label" placeholder="e.g. 2021–2022"></div>
+            <div><label>Rate / Kg (₹)</label><input type="text" id="hist2Kg" placeholder="e.g. 65"></div>
+            <div><label>Rate / Qtl (₹)</label><input type="text" id="hist2Qtl" placeholder="e.g. 6200"></div>
+          </div>
+        </div>
+
+        <button class="btn small" id="savePricingBtn" style="margin-top:8px;">Save all prices</button>
+        <span id="pricingSaved" class="hint hidden" style="color:var(--ok);margin-left:10px;">Saved successfully!</span>
       </div>
 
       <div class="card">
@@ -733,7 +731,7 @@
           <div><label>CallMeBot API key</label><input type="text" id="settingCallMeBotKey" placeholder="e.g. 123456"></div>
           <div><label>Your WhatsApp number (with country code)</label><input type="text" id="settingCallMeBotPhone" placeholder="917624858405"></div>
         </div>
-        <button class="btn small" id="saveAlertsBtn" style="margin-top:16px;">Save</button>
+        <button class="btn small" id="saveAlertsBtn" style="margin-top:16px;">Save alerts</button>
         <span id="alertsSaved" class="hint hidden" style="color:var(--ok);margin-left:10px;">Saved.</span>
       </div>
 
@@ -873,16 +871,72 @@ function demoApi(method, p) {
   return { ok:false, error:'Unknown request' };
 }
 
-// Load prices
+// Load prices & dynamic history
 let currentPrices = { pricePerKg: 75, pricePerQuintal: 7000 };
+
+function getSavedHistoryConfig() {
+  try {
+    return JSON.parse(localStorage.getItem('bsi_price_history')) || null;
+  } catch(e) {
+    return null;
+  }
+}
+
+function renderHistoryTable(currentKg, currentQtl) {
+  const tbody = document.getElementById('rateHistoryBody');
+  const saved = getSavedHistoryConfig();
+
+  let html = `
+    <tr>
+      <td><strong>Current Rate (Active)</strong></td>
+      <td><strong>₹${currentKg}</strong></td>
+      <td><strong>₹${Number(currentQtl).toLocaleString('en-IN')}</strong></td>
+      <td><span style="color:var(--ok);font-weight:600;">Active Rate</span></td>
+    </tr>
+  `;
+
+  if (saved && (saved.hist1Kg || saved.hist2Kg)) {
+    if (saved.hist1Kg) {
+      html += `
+        <tr>
+          <td>${saved.hist1Label || 'Previous Period'}</td>
+          <td>₹${saved.hist1Kg}</td>
+          <td>₹${Number(saved.hist1Qtl || 0).toLocaleString('en-IN')}</td>
+          <td>Revised</td>
+        </tr>
+      `;
+    }
+    if (saved.hist2Kg) {
+      html += `
+        <tr>
+          <td>${saved.hist2Label || 'Older Period'}</td>
+          <td>₹${saved.hist2Kg}</td>
+          <td>₹${Number(saved.hist2Qtl || 0).toLocaleString('en-IN')}</td>
+          <td>Historical</td>
+        </tr>
+      `;
+    }
+  } else {
+    // If owner hasn't entered old prices yet, show clean placeholder notice
+    html += `
+      <tr>
+        <td colspan="4" style="color:var(--ink-soft);font-style:italic;">
+          Earlier year records will appear here as updated by the mill.
+        </td>
+      </tr>
+    `;
+  }
+
+  tbody.innerHTML = html;
+}
+
 async function loadPrices() {
   const r = await apiGet({ action:'settings' });
   if (r.ok) {
     currentPrices = r;
     document.getElementById('priceKgDisplay').textContent = '₹' + r.pricePerKg + ' / kg';
     document.getElementById('priceQtlDisplay').textContent = '₹' + Number(r.pricePerQuintal).toLocaleString('en-IN') + ' / quintal (100 kg)';
-    document.getElementById('histCurrentKg').textContent = '₹' + r.pricePerKg;
-    document.getElementById('histCurrentQtl').textContent = '₹' + Number(r.pricePerQuintal).toLocaleString('en-IN');
+    renderHistoryTable(r.pricePerKg, r.pricePerQuintal);
   }
 }
 loadPrices();
@@ -1036,7 +1090,6 @@ async function loadTrackDetails(id) {
     });
     html += '</ul>';
 
-    // Cancellation Action Zone
     html += `<div style="margin-top:22px;border-top:1px dashed var(--line);padding-top:16px;">`;
     if (!isDispatched) {
       html += `
@@ -1090,6 +1143,18 @@ document.getElementById('ownerLoginBtn').addEventListener('click', async ()=>{
   document.getElementById('ownerDashboard').classList.remove('hidden');
   document.getElementById('settingPriceKg').value = r.settings.pricePerKg;
   document.getElementById('settingPriceQtl').value = r.settings.pricePerQuintal;
+
+  // Load saved history fields
+  const savedHist = getSavedHistoryConfig();
+  if (savedHist) {
+    document.getElementById('hist1Label').value = savedHist.hist1Label || '';
+    document.getElementById('hist1Kg').value = savedHist.hist1Kg || '';
+    document.getElementById('hist1Qtl').value = savedHist.hist1Qtl || '';
+    document.getElementById('hist2Label').value = savedHist.hist2Label || '';
+    document.getElementById('hist2Kg').value = savedHist.hist2Kg || '';
+    document.getElementById('hist2Qtl').value = savedHist.hist2Qtl || '';
+  }
+
   document.getElementById('settingCallMeBotKey').value = r.settings.callMeBotApiKey || '';
   document.getElementById('settingCallMeBotPhone').value = r.settings.callMeBotPhone || '';
   renderOrders(r.orders);
@@ -1111,11 +1176,23 @@ document.getElementById('saveAlertsBtn').addEventListener('click', async ()=>{
 document.getElementById('savePricingBtn').addEventListener('click', async ()=>{
   const pricePerKg = document.getElementById('settingPriceKg').value;
   const pricePerQuintal = document.getElementById('settingPriceQtl').value;
+
+  // Save history inputs locally
+  const historyData = {
+    hist1Label: document.getElementById('hist1Label').value.trim(),
+    hist1Kg: document.getElementById('hist1Kg').value.trim(),
+    hist1Qtl: document.getElementById('hist1Qtl').value.trim(),
+    hist2Label: document.getElementById('hist2Label').value.trim(),
+    hist2Kg: document.getElementById('hist2Kg').value.trim(),
+    hist2Qtl: document.getElementById('hist2Qtl').value.trim()
+  };
+  localStorage.setItem('bsi_price_history', JSON.stringify(historyData));
+
   const r = await apiPost({ action:'updateSettings', password: ownerPasswordCache, pricePerKg, pricePerQuintal });
   if (r.ok) {
     const saved = document.getElementById('pricingSaved');
     saved.classList.remove('hidden');
-    setTimeout(()=>saved.classList.add('hidden'), 2000);
+    setTimeout(()=>saved.classList.add('hidden'), 2500);
     loadPrices();
   } else {
     alert('Could not save: ' + (r.error||''));
