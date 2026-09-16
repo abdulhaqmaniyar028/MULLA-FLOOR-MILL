@@ -464,22 +464,9 @@
     user-select:none;
   }
   #secretOwnerTrigger{cursor:default;}
-  .setup-banner{
-    background:#FBE9E4;border-bottom:1px solid #D98E80;color:#7A2E1F;
-    padding:10px 20px;font-size:.85rem;text-align:center;
-  }
-
-  @media (max-width:600px){
-    nav.tabs .tab{font-size:.9rem;padding:12px 6px;}
-    .brand h1{font-size:1.4rem;}
-  }
 </style>
 </head>
 <body>
-
-<div id="setupBanner" class="setup-banner hidden">
-  Setup needed: open index.html and set SCRIPT_URL in CONFIG.
-</div>
 
 <div class="hero">
   <div class="hero-bg"></div>
@@ -535,9 +522,7 @@
               <th>Status</th>
             </tr>
           </thead>
-          <tbody id="rateHistoryBody">
-            <!-- Dynamic sync -->
-          </tbody>
+          <tbody id="rateHistoryBody"></tbody>
         </table>
         <div id="customerMoreBox" class="hidden" style="text-align:center;margin-top:6px;">
           <button class="toggle-more-btn" id="custToggleMoreBtn">Show all earlier dates</button>
@@ -547,7 +532,11 @@
 
     <div class="card" id="orderFormCard">
       <h2>Place an order</h2>
-      <p class="sub">Fill in your details below. You'll get an Order ID to track your delivery, and the mill is notified automatically — no extra step needed on your end.</p>
+      <p class="sub">Fill in your details below. You'll get an Order ID to track your delivery, and the mill is notified automatically.</p>
+
+      <div id="pricingNotice" class="hidden" style="background:#FFF9E6;border:1px solid #E6D3A3;padding:12px;border-radius:4px;margin-bottom:16px;font-size:.9rem;color:var(--molasses);font-weight:600;">
+        ⏳ Today's market price has not been announced yet. You can browse, but new orders will open as soon as today's rate is set by the mill.
+      </div>
 
       <form id="orderForm">
         <div class="row">
@@ -688,7 +677,7 @@
           <div class="id" id="resultOrderId">—</div>
         </div>
       </div>
-      <p>Save your Order ID to check delivery status anytime in the <strong>Track Order</strong> tab. The mill has already been notified of your order automatically — you don't need to do anything else.</p>
+      <p>Save your Order ID to check delivery status anytime in the <strong>Track Order</strong> tab. The mill has already been notified of your order automatically.</p>
     </div>
 
   </section>
@@ -714,7 +703,7 @@
   <section id="owner" class="panel">
     <div class="card" id="ownerLoginCard">
       <h2>Owner Portal</h2>
-      <p class="sub">Enter the secret password to access mill settings and order records.</p>
+      <p class="sub">Enter password to manage pricing and live orders.</p>
       <label>Password</label>
       <input type="password" id="ownerPassword">
       <div id="ownerLoginError" class="error-box hidden"></div>
@@ -724,14 +713,19 @@
     <div class="hidden" id="ownerDashboard">
       <div class="card">
         <h2>Today's Live Pricing</h2>
-        <p class="sub">Change the active rate billed to new orders across all devices.</p>
+        <p class="sub">Set today's rate. When you change this, today's previous rate is automatically archived into the Rate History table below.</p>
         <div class="row">
-          <div><label>Today's Price per Kg (₹)</label><input type="number" id="settingPriceKg"></div>
-          <div><label>Today's Price per Quintal (₹)</label><input type="number" id="settingPriceQtl"></div>
+          <div><label>Today's Price per Kg (₹)</label><input type="number" id="settingPriceKg" placeholder="Leave empty for Dash (—)"></div>
+          <div><label>Today's Price per Quintal (₹)</label><input type="number" id="settingPriceQtl" placeholder="Leave empty for Dash (—)"></div>
         </div>
 
-        <h3 style="margin-top:28px;font-size:1.15rem;">Rate History &amp; Dates Changed</h3>
-        <p class="sub">Saved in the cloud — changes show up immediately for every customer on all phones and computers.</p>
+        <div style="margin-top:16px;">
+          <button class="btn small" id="savePricingBtn">Save &amp; Update Today's Price</button>
+          <span id="pricingSaved" class="hint hidden" style="color:var(--ok);margin-left:10px;">Saved to cloud!</span>
+        </div>
+
+        <h3 style="margin-top:32px;font-size:1.15rem;">Rate History &amp; Past Price Changes</h3>
+        <p class="sub">Past dates and prices recorded in the system. Changes you save above update this list automatically.</p>
         
         <div id="historyRowsContainer"></div>
 
@@ -740,22 +734,6 @@
           <button type="button" class="btn danger small" id="resetHistoryBtn">🗑️ Reset / Clear All History</button>
           <button type="button" class="toggle-more-btn hidden" id="ownerToggleAllBtn">See all earlier dates</button>
         </div>
-
-        <div style="margin-top:20px;">
-          <button class="btn small" id="savePricingBtn">Save all prices</button>
-          <span id="pricingSaved" class="hint hidden" style="color:var(--ok);margin-left:10px;">Saved to cloud!</span>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>Automatic WhatsApp order alerts</h2>
-        <p class="sub">One-time setup so you get a WhatsApp message the instant a new order comes in.</p>
-        <div class="row">
-          <div><label>CallMeBot API key</label><input type="text" id="settingCallMeBotKey" placeholder="e.g. 123456"></div>
-          <div><label>Your WhatsApp number (with country code)</label><input type="text" id="settingCallMeBotPhone" placeholder="917624858405"></div>
-        </div>
-        <button class="btn small" id="saveAlertsBtn" style="margin-top:16px;">Save alerts</button>
-        <span id="alertsSaved" class="hint hidden" style="color:var(--ok);margin-left:10px;">Saved.</span>
       </div>
 
       <div class="card">
@@ -786,8 +764,6 @@
 const CONFIG = {
   SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzp6Glit-TH9U7grY8G6sskXHZZ4Nsq0NdQKHRfdXfyOOwWqUevzsR98ETWSwn1BQU/exec",
   UPI_ID: "Q380321909@ybl",
-  UPI_NAME: "Sana Kirana",
-  OWNER_WHATSAPP: "917624858405",
   MIN_KG_LOCAL: 10,
   MIN_QUINTAL_OUTSTATION: 1,
   LOCAL_CITY_KEYWORDS: ["gulbarga","kalaburagi","kalburgi"]
@@ -795,12 +771,11 @@ const CONFIG = {
 /* ====================================================== */
 
 const STATUS_STEPS = ["Order Received","Confirmed","In Production","Dispatched","In Transit","Delivered"];
-const DEMO_MODE = !CONFIG.SCRIPT_URL;
-
-const demoStore = {
-  settings: { pricePerKg: 75, pricePerQuintal: 7000, ownerPassword: "mullan123", callMeBotApiKey: "", callMeBotPhone: "", priceHistory: [] },
-  orders: []
-};
+let currentPrices = { pricePerKg: null, pricePerQuintal: null };
+let cloudPriceHistory = [];
+let showAllCustomerHistory = false;
+let showAllOwnerHistory = false;
+let ownerPasswordCache = '';
 
 // Tabs
 document.querySelectorAll('nav.tabs .tab').forEach(btn=>{
@@ -812,7 +787,7 @@ document.querySelectorAll('nav.tabs .tab').forEach(btn=>{
   });
 });
 
-/* Stealth Owner Access: Triple-click footer text */
+/* Stealth Owner Access */
 let footerClickCount = 0;
 let footerClickTimer = null;
 document.getElementById('secretOwnerTrigger').addEventListener('click', ()=>{
@@ -828,79 +803,16 @@ document.getElementById('secretOwnerTrigger').addEventListener('click', ()=>{
   }
 });
 
-if (DEMO_MODE) {
-  document.getElementById('setupBanner').classList.remove('hidden');
-}
-
 // API Helpers
 async function apiGet(params) {
-  if (DEMO_MODE) return demoApi('GET', params);
   const url = CONFIG.SCRIPT_URL + '?' + new URLSearchParams(params).toString();
   const res = await fetch(url);
   return res.json();
 }
 async function apiPost(body) {
-  if (DEMO_MODE) return demoApi('POST', body);
   const res = await fetch(CONFIG.SCRIPT_URL, { method:'POST', body: JSON.stringify(body) });
   return res.json();
 }
-function demoApi(method, p) {
-  if (method === 'GET') {
-    if (p.action === 'settings') return { ok:true, pricePerKg: demoStore.settings.pricePerKg, pricePerQuintal: demoStore.settings.pricePerQuintal, priceHistory: demoStore.settings.priceHistory };
-    if (p.action === 'track') {
-      const o = demoStore.orders.find(o=>o.OrderID===p.id);
-      return o ? { ok:true, order:o } : { ok:false, error:'Order not found (demo mode)' };
-    }
-    if (p.action === 'list') {
-      if (p.password !== demoStore.settings.ownerPassword) return { ok:false, error:'Wrong password' };
-      return { ok:true, orders:[...demoStore.orders].reverse(), settings: demoStore.settings };
-    }
-  } else {
-    if (p.action === 'createOrder') {
-      const id = 'BSI-DEMO-' + Math.floor(1000+Math.random()*9000);
-      const pricePerUnit = p.unit==='Quintal'?demoStore.settings.pricePerQuintal:demoStore.settings.pricePerKg;
-      const amount = pricePerUnit * Number(p.quantity);
-      const order = { OrderID:id, Name:p.name, Phone:p.phone, DeliveryType:p.deliveryType, City:p.city, Address:p.address, Quantity:p.quantity, Unit:p.unit, PricePerUnit:pricePerUnit, Amount:amount, Status:'Order Received', DeliveryCharge:'', ETA:'', PaymentRef:p.paymentRef, Notes:p.notes, CreatedAt:new Date().toISOString() };
-      demoStore.orders.push(order);
-      return { ok:true, orderId:id, amount };
-    }
-    if (p.action === 'cancelOrder') {
-      const o = demoStore.orders.find(o=>o.OrderID===p.orderId);
-      if (!o) return { ok:false, error:'Order not found' };
-      if (['Dispatched', 'In Transit', 'Delivered'].includes(o.Status)) {
-        return { ok:false, error:'Order has already been dispatched. Cancellation not allowed.' };
-      }
-      o.Status = 'Cancelled';
-      return { ok:true };
-    }
-    if (p.action === 'updateOrder') {
-      if (p.password !== demoStore.settings.ownerPassword) return { ok:false, error:'Wrong password' };
-      const o = demoStore.orders.find(o=>o.OrderID===p.orderId);
-      if (!o) return { ok:false, error:'Not found' };
-      if (p.status) o.Status = p.status;
-      if (p.deliveryCharge!==undefined) o.DeliveryCharge = p.deliveryCharge;
-      return { ok:true };
-    }
-    if (p.action === 'updateSettings') {
-      if (p.password !== demoStore.settings.ownerPassword) return { ok:false, error:'Wrong password' };
-      if (p.pricePerKg) demoStore.settings.pricePerKg = Number(p.pricePerKg);
-      if (p.pricePerQuintal) demoStore.settings.pricePerQuintal = Number(p.pricePerQuintal);
-      if (p.newPassword) demoStore.settings.ownerPassword = p.newPassword;
-      if (p.callMeBotApiKey !== undefined) demoStore.settings.callMeBotApiKey = p.callMeBotApiKey;
-      if (p.callMeBotPhone !== undefined) demoStore.settings.callMeBotPhone = p.callMeBotPhone;
-      if (p.priceHistory !== undefined) demoStore.settings.priceHistory = p.priceHistory;
-      return { ok:true };
-    }
-  }
-  return { ok:false, error:'Unknown request' };
-}
-
-/* ======================================================
-   CLOUD-SYNCED DATE-BASED PRICE HISTORY
-   ====================================================== */
-let cloudPriceHistory = [];
-let showAllCustomerHistory = false;
-let showAllOwnerHistory = false;
 
 function formatDateDisplay(dateStr) {
   if (!dateStr) return 'Earlier Record';
@@ -914,16 +826,25 @@ function formatDateDisplay(dateStr) {
   return dateStr;
 }
 
-function renderCustomerHistory(currentKg, currentQtl) {
+function getTodayISODate() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function renderCustomerHistory() {
   const tbody = document.getElementById('rateHistoryBody');
   const list = (cloudPriceHistory || []).filter(item => item && (item.date || item.kg || item.qtl));
 
+  const hasActivePrice = currentPrices.pricePerKg > 0;
   let html = `
     <tr>
       <td><strong>Current Rate (Active)</strong></td>
-      <td><strong>₹${currentKg}</strong></td>
-      <td><strong>₹${Number(currentQtl).toLocaleString('en-IN')}</strong></td>
-      <td><span style="color:var(--ok);font-weight:600;">Active Rate</span></td>
+      <td><strong>${hasActivePrice ? '₹' + currentPrices.pricePerKg : '₹— / Pending'}</strong></td>
+      <td><strong>${hasActivePrice ? '₹' + Number(currentPrices.pricePerQuintal).toLocaleString('en-IN') : '₹— / Pending'}</strong></td>
+      <td><span style="color:${hasActivePrice ? 'var(--ok)' : 'var(--wait)'};font-weight:600;">${hasActivePrice ? 'Active Rate' : 'To Be Announced'}</span></td>
     </tr>
   `;
 
@@ -967,7 +888,7 @@ function renderCustomerHistory(currentKg, currentQtl) {
 
 document.getElementById('custToggleMoreBtn').addEventListener('click', ()=>{
   showAllCustomerHistory = !showAllCustomerHistory;
-  renderCustomerHistory(currentPrices.pricePerKg, currentPrices.pricePerQuintal);
+  renderCustomerHistory();
 });
 
 function renderOwnerHistoryInputs() {
@@ -978,7 +899,7 @@ function renderOwnerHistoryInputs() {
   if (list.length === 0) {
     container.innerHTML = `
       <div style="background:#FFF9E6;border:1px dashed var(--line);padding:12px;border-radius:4px;font-size:.85rem;color:var(--ink-soft);">
-        No earlier price changes recorded. Click <strong>➕ Add Another Date</strong> below to add one anytime.
+        No earlier price changes recorded. When you change today's price above, past rates will be logged automatically.
       </div>
     `;
     document.getElementById('ownerToggleAllBtn').classList.add('hidden');
@@ -1031,7 +952,7 @@ document.getElementById('ownerToggleAllBtn').addEventListener('click', ()=>{
 
 document.getElementById('addHistoryRowBtn').addEventListener('click', ()=>{
   cloudPriceHistory = collectCurrentOwnerInputs();
-  cloudPriceHistory.push({ date: '', kg: '', qtl: '' });
+  cloudPriceHistory.unshift({ date: getTodayISODate(), kg: '', qtl: '' });
   showAllOwnerHistory = true;
   renderOwnerHistoryInputs();
 });
@@ -1040,18 +961,18 @@ function removeHistoryRow(index) {
   cloudPriceHistory = collectCurrentOwnerInputs();
   cloudPriceHistory.splice(index, 1);
   renderOwnerHistoryInputs();
-  renderCustomerHistory(currentPrices.pricePerKg, currentPrices.pricePerQuintal);
+  renderCustomerHistory();
 }
 
 document.getElementById('resetHistoryBtn').addEventListener('click', async ()=>{
   if (confirm('Are you sure you want to clear all recorded price change dates? This will clear them for ALL devices.')) {
     cloudPriceHistory = [];
     renderOwnerHistoryInputs();
-    renderCustomerHistory(currentPrices.pricePerKg, currentPrices.pricePerQuintal);
+    renderCustomerHistory();
     if (ownerPasswordCache) {
       await apiPost({ action:'updateSettings', password: ownerPasswordCache, priceHistory: [] });
     }
-    alert('Price history has been reset successfully across all devices.');
+    alert('Price history has been reset successfully.');
   }
 });
 
@@ -1071,17 +992,33 @@ function collectCurrentOwnerInputs() {
   return list;
 }
 
-// Load prices & dynamic cloud history
-let currentPrices = { pricePerKg: 75, pricePerQuintal: 7000 };
-
+// Load prices from sheet
 async function loadPrices() {
   const r = await apiGet({ action:'settings' });
   if (r.ok) {
-    currentPrices = r;
+    currentPrices = {
+      pricePerKg: r.pricePerKg,
+      pricePerQuintal: r.pricePerQuintal
+    };
     cloudPriceHistory = r.priceHistory || [];
-    document.getElementById('priceKgDisplay').textContent = '₹' + r.pricePerKg + ' / kg';
-    document.getElementById('priceQtlDisplay').textContent = '₹' + Number(r.pricePerQuintal).toLocaleString('en-IN') + ' / quintal (100 kg)';
-    renderCustomerHistory(r.pricePerKg, r.pricePerQuintal);
+
+    const isSet = r.pricePerKg > 0;
+    document.getElementById('priceKgDisplay').textContent = isSet ? ('₹' + r.pricePerKg + ' / kg') : '₹— / Not Announced';
+    document.getElementById('priceQtlDisplay').textContent = isSet ? ('₹' + Number(r.pricePerQuintal).toLocaleString('en-IN') + ' / quintal') : '₹— / Pending';
+
+    const submitBtn = document.getElementById('submitOrderBtn');
+    const notice = document.getElementById('pricingNotice');
+    if (!isSet) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Awaiting today\'s rate...';
+      notice.classList.remove('hidden');
+    } else {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Continue to payment';
+      notice.classList.add('hidden');
+    }
+
+    renderCustomerHistory();
   }
 }
 loadPrices();
@@ -1119,6 +1056,10 @@ document.getElementById('custUnit').addEventListener('change', updateAmountPrevi
 function updateAmountPreview(){
   const qty = Number(document.getElementById('custQty').value)||0;
   const unit = document.getElementById('custUnit').value;
+  if (!currentPrices.pricePerKg) {
+    document.getElementById('amountPreview').textContent = 'Pricing will calculate once rate is announced.';
+    return;
+  }
   const price = unit==='Quintal' ? currentPrices.pricePerQuintal : currentPrices.pricePerKg;
   const amount = qty*price;
   document.getElementById('amountPreview').textContent = amount ? `Estimated amount: ₹${amount.toLocaleString('en-IN')} (plus transport charge, if applicable)` : '';
@@ -1138,6 +1079,12 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
   e.preventDefault();
   const errBox = document.getElementById('orderError');
   errBox.classList.add('hidden');
+
+  if (!currentPrices.pricePerKg) {
+    errBox.textContent = 'Today\'s price has not been announced yet. Please check back shortly.';
+    errBox.classList.remove('hidden');
+    return;
+  }
 
   const name = document.getElementById('custName').value.trim();
   const phone = document.getElementById('custPhone').value.trim();
@@ -1238,13 +1185,13 @@ async function loadTrackDetails(id) {
     html += `<div style="margin-top:22px;border-top:1px dashed var(--line);padding-top:16px;">`;
     if (!isDispatched) {
       html += `
-        <p class="hint" style="color:var(--molasses);margin-bottom:8px;">Need to cancel? You can cancel right now for a <strong>full 100% refund</strong> before the order is dispatched.</p>
+        <p class="hint" style="color:var(--molasses);margin-bottom:8px;">Need to cancel? You can cancel right now for a <strong>full 100% refund</strong> before dispatch.</p>
         <button class="btn danger small" id="custCancelBtn">Cancel Order &amp; Request Full Refund</button>
       `;
     } else {
       html += `
         <div style="background:#F4EFEB;padding:10px 14px;border-radius:4px;font-size:.85rem;color:var(--ink-soft);">
-          🔒 <strong>Cancellation Locked:</strong> Your order has been dispatched via transport. As per policy, cancellations and refunds are not available once goods are on the road.
+          🔒 <strong>Cancellation Locked:</strong> Your order has been dispatched via transport.
         </div>
       `;
     }
@@ -1264,7 +1211,7 @@ async function loadTrackDetails(id) {
       cancelBtn.textContent = 'Cancelling...';
       const res = await apiPost({ action:'cancelOrder', orderId: o.OrderID });
       if (res.ok) {
-        alert('Your order has been cancelled successfully. Full refund initiated.');
+        alert('Your order has been cancelled successfully.');
         loadTrackDetails(o.OrderID);
       } else {
         alert(res.error || 'Unable to cancel order.');
@@ -1276,7 +1223,6 @@ async function loadTrackDetails(id) {
 }
 
 // Stealth Owner Login
-let ownerPasswordCache = '';
 document.getElementById('ownerLoginBtn').addEventListener('click', async ()=>{
   const pw = document.getElementById('ownerPassword').value;
   const r = await apiGet({ action:'list', password: pw });
@@ -1286,51 +1232,51 @@ document.getElementById('ownerLoginBtn').addEventListener('click', async ()=>{
   ownerPasswordCache = pw;
   document.getElementById('ownerLoginCard').classList.add('hidden');
   document.getElementById('ownerDashboard').classList.remove('hidden');
-  document.getElementById('settingPriceKg').value = r.settings.pricePerKg;
-  document.getElementById('settingPriceQtl').value = r.settings.pricePerQuintal;
+  
+  document.getElementById('settingPriceKg').value = r.settings.pricePerKg || '';
+  document.getElementById('settingPriceQtl').value = r.settings.pricePerQuintal || '';
 
   cloudPriceHistory = r.settings.priceHistory || [];
   renderOwnerHistoryInputs();
-
-  document.getElementById('settingCallMeBotKey').value = r.settings.callMeBotApiKey || '';
-  document.getElementById('settingCallMeBotPhone').value = r.settings.callMeBotPhone || '';
   renderOrders(r.orders);
 });
 
-document.getElementById('saveAlertsBtn').addEventListener('click', async ()=>{
-  const callMeBotApiKey = document.getElementById('settingCallMeBotKey').value.trim();
-  const callMeBotPhone = document.getElementById('settingCallMeBotPhone').value.trim();
-  const r = await apiPost({ action:'updateSettings', password: ownerPasswordCache, callMeBotApiKey, callMeBotPhone });
-  if (r.ok) {
-    const saved = document.getElementById('alertsSaved');
-    saved.classList.remove('hidden');
-    setTimeout(()=>saved.classList.add('hidden'), 2000);
-  } else {
-    alert('Could not save: ' + (r.error||''));
-  }
-});
-
+// Save & Auto-Archive Previous Price
 document.getElementById('savePricingBtn').addEventListener('click', async ()=>{
-  const pricePerKg = document.getElementById('settingPriceKg').value;
-  const pricePerQuintal = document.getElementById('settingPriceQtl').value;
+  const newKg = document.getElementById('settingPriceKg').value.trim();
+  const newQtl = document.getElementById('settingPriceQtl').value.trim();
 
-  const updatedHistory = collectCurrentOwnerInputs().filter(h => h && (h.date || h.kg || h.qtl));
-  updatedHistory.sort((a,b) => (b.date || '').localeCompare(a.date || ''));
-  cloudPriceHistory = updatedHistory;
+  let historyList = collectCurrentOwnerInputs().filter(h => h && (h.date || h.kg || h.qtl));
+  const todayStr = getTodayISODate();
+
+  // If there was an active rate that differs from the new rate, archive the old rate with today's date
+  if (currentPrices.pricePerKg && (currentPrices.pricePerKg != newKg || currentPrices.pricePerQuintal != newQtl)) {
+    const alreadyExists = historyList.some(h => h.date === todayStr);
+    if (!alreadyExists) {
+      historyList.unshift({
+        date: todayStr,
+        kg: currentPrices.pricePerKg,
+        qtl: currentPrices.pricePerQuintal
+      });
+    }
+  }
+
+  historyList.sort((a,b) => (b.date || '').localeCompare(a.date || ''));
+  cloudPriceHistory = historyList;
 
   const r = await apiPost({ 
     action:'updateSettings', 
     password: ownerPasswordCache, 
-    pricePerKg, 
-    pricePerQuintal,
-    priceHistory: updatedHistory
+    pricePerKg: newKg === '' ? '' : Number(newKg), 
+    pricePerQuintal: newQtl === '' ? '' : Number(newQtl),
+    priceHistory: historyList
   });
 
   if (r.ok) {
     const saved = document.getElementById('pricingSaved');
     saved.classList.remove('hidden');
     setTimeout(()=>saved.classList.add('hidden'), 2500);
-    renderCustomerHistory(pricePerKg, pricePerQuintal);
+    await loadPrices();
     renderOwnerHistoryInputs();
   } else {
     alert('Could not save: ' + (r.error||''));
@@ -1359,7 +1305,7 @@ function renderOrders(orders){
       <td><input type="number" class="charge-input" value="${o.DeliveryCharge||''}" placeholder="₹" ${o.DeliveryType!=='Delivery'?'disabled':''}></td>
       <td>
         <button class="btn small save-btn" style="margin-bottom:6px;">Save</button><br>
-        <button class="btn small whatsapp notify-btn">Notify on WhatsApp</button>
+        <button class="btn small whatsapp notify-btn">WhatsApp</button>
       </td>
     `;
     tr.querySelector('.save-btn').addEventListener('click', async ()=>{
