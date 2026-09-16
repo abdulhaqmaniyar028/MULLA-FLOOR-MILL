@@ -437,7 +437,6 @@
   .status-pill.delivered{background:#DEEBDB;color:var(--ok);}
   .status-pill.cancelled{background:#FBE9E4;color:var(--danger);}
 
-  /* History Date Row Card in Owner Panel */
   .history-edit-row{
     background:#F6F0E4;
     border:1px solid var(--line);
@@ -450,7 +449,7 @@
     background:transparent;
     border:none;
     color:var(--danger);
-    font-size:.8rem;
+    font-size:.82rem;
     font-weight:600;
     cursor:pointer;
     float:right;
@@ -725,21 +724,22 @@
     <div class="hidden" id="ownerDashboard">
       <div class="card">
         <h2>Today's Live Pricing</h2>
-        <p class="sub">This is the current active rate billed to new orders.</p>
+        <p class="sub">Change the active rate billed to new orders anytime.</p>
         <div class="row">
           <div><label>Today's Price per Kg (₹)</label><input type="number" id="settingPriceKg"></div>
           <div><label>Today's Price per Quintal (₹)</label><input type="number" id="settingPriceQtl"></div>
         </div>
 
         <h3 style="margin-top:28px;font-size:1.15rem;">Rate History &amp; Dates Changed</h3>
-        <p class="sub">Pick the exact date each price changed. You can add new dates anytime. By default, only the latest 3 are shown to keep things tidy.</p>
+        <p class="sub">Select dates when prices changed. You can add new dates, remove entries, or wipe history completely.</p>
         
         <div id="historyRowsContainer">
           <!-- Dynamic history rows injected here -->
         </div>
 
-        <div style="display:flex;gap:10px;align-items:center;margin-top:10px;">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;">
           <button type="button" class="btn secondary small" id="addHistoryRowBtn">➕ Add Another Date</button>
+          <button type="button" class="btn danger small" id="resetHistoryBtn">🗑️ Reset / Clear All History</button>
           <button type="button" class="toggle-more-btn hidden" id="ownerToggleAllBtn">See all earlier dates</button>
         </div>
 
@@ -905,13 +905,9 @@ let showAllOwnerHistory = false;
 function getStoredDateHistory() {
   try {
     const list = JSON.parse(localStorage.getItem('bsi_date_price_history'));
-    if (Array.isArray(list) && list.length > 0) return list;
+    if (Array.isArray(list)) return list;
   } catch(e){}
-  // Default baseline minimum 2 dates for the owner to edit
-  return [
-    { date: '', kg: '', qtl: '' },
-    { date: '', kg: '', qtl: '' }
-  ];
+  return [];
 }
 
 function formatDateDisplay(dateStr) {
@@ -930,7 +926,6 @@ function renderCustomerHistory(currentKg, currentQtl) {
   const tbody = document.getElementById('rateHistoryBody');
   const list = getStoredDateHistory().filter(item => item.date || item.kg || item.qtl);
 
-  // Active current rate is always first
   let html = `
     <tr>
       <td><strong>Current Rate (Active)</strong></td>
@@ -944,7 +939,7 @@ function renderCustomerHistory(currentKg, currentQtl) {
     html += `
       <tr>
         <td colspan="4" style="color:var(--ink-soft);font-style:italic;">
-          Earlier year records will appear here as updated by the mill.
+          Earlier date records will appear here as updated by the mill.
         </td>
       </tr>
     `;
@@ -953,7 +948,6 @@ function renderCustomerHistory(currentKg, currentQtl) {
     return;
   }
 
-  // Determine limit: Top 3 only or All
   const limit = showAllCustomerHistory ? list.length : Math.min(3, list.length);
   for (let i = 0; i < limit; i++) {
     const item = list[i];
@@ -969,7 +963,6 @@ function renderCustomerHistory(currentKg, currentQtl) {
 
   tbody.innerHTML = html;
 
-  // Handle "See all" toggle visibility
   const moreBox = document.getElementById('customerMoreBox');
   const toggleBtn = document.getElementById('custToggleMoreBtn');
   if (list.length > 3) {
@@ -990,6 +983,16 @@ function renderOwnerHistoryInputs() {
   const container = document.getElementById('historyRowsContainer');
   container.innerHTML = '';
   const list = getStoredDateHistory();
+
+  if (list.length === 0) {
+    container.innerHTML = `
+      <div style="background:#FFF9E6;border:1px dashed var(--line);padding:12px;border-radius:4px;font-size:.85rem;color:var(--ink-soft);">
+        No earlier price changes recorded. Click <strong>➕ Add Another Date</strong> below to add one anytime.
+      </div>
+    `;
+    document.getElementById('ownerToggleAllBtn').classList.add('hidden');
+    return;
+  }
 
   const limit = showAllOwnerHistory ? list.length : Math.min(3, list.length);
 
@@ -1021,7 +1024,6 @@ function renderOwnerHistoryInputs() {
     container.appendChild(row);
   }
 
-  // Owner "See All" button toggle
   const ownerToggleBtn = document.getElementById('ownerToggleAllBtn');
   if (list.length > 3) {
     ownerToggleBtn.classList.remove('hidden');
@@ -1040,20 +1042,28 @@ document.getElementById('addHistoryRowBtn').addEventListener('click', ()=>{
   const list = collectCurrentOwnerInputs();
   list.push({ date: '', kg: '', qtl: '' });
   localStorage.setItem('bsi_date_price_history', JSON.stringify(list));
-  showAllOwnerHistory = true; // Automatically expand so user sees newly added row
+  showAllOwnerHistory = true;
   renderOwnerHistoryInputs();
 });
 
+// Remove individual row (No block/restriction)
 function removeHistoryRow(index) {
   const list = collectCurrentOwnerInputs();
-  if (list.length <= 2) {
-    alert('At least 2 previous date slots should remain available for your records.');
-    return;
-  }
   list.splice(index, 1);
   localStorage.setItem('bsi_date_price_history', JSON.stringify(list));
   renderOwnerHistoryInputs();
+  renderCustomerHistory(currentPrices.pricePerKg, currentPrices.pricePerQuintal);
 }
+
+// Reset / Clear All History Button
+document.getElementById('resetHistoryBtn').addEventListener('click', ()=>{
+  if (confirm('Are you sure you want to clear all recorded price change dates? This will remove all demo or older date logs.')) {
+    localStorage.removeItem('bsi_date_price_history');
+    renderOwnerHistoryInputs();
+    renderCustomerHistory(currentPrices.pricePerKg, currentPrices.pricePerQuintal);
+    alert('Price history has been reset successfully.');
+  }
+});
 
 function collectCurrentOwnerInputs() {
   const container = document.getElementById('historyRowsContainer');
@@ -1312,9 +1322,7 @@ document.getElementById('savePricingBtn').addEventListener('click', async ()=>{
   const pricePerKg = document.getElementById('settingPriceKg').value;
   const pricePerQuintal = document.getElementById('settingPriceQtl').value;
 
-  // Collect and save date-based history
   const updatedHistory = collectCurrentOwnerInputs().filter(h => h.date || h.kg || h.qtl);
-  // Sort latest date first
   updatedHistory.sort((a,b) => (b.date || '').localeCompare(a.date || ''));
   localStorage.setItem('bsi_date_price_history', JSON.stringify(updatedHistory));
 
