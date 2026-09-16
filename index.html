@@ -161,18 +161,63 @@
   .panel{display:none;}
   .panel.active{display:block;}
 
-  /* Price ledger */
-  .price-ledger{
+  /* Updated Modern Rate Card */
+  .today-price-card{
     background:var(--paper);
     border:1px solid var(--line);
-    border-radius:4px;
-    padding:16px 20px;
-    display:flex;gap:28px;flex-wrap:wrap;
-    margin-bottom:22px;
+    border-radius:6px;
+    padding:18px 20px;
+    margin-bottom:20px;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
   }
-  .price-ledger .item{min-width:140px;}
-  .price-ledger .item .label{font-size:.78rem;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;}
-  .price-ledger .item .value{font-family:'Zilla Slab',serif;font-size:1.5rem;color:var(--molasses);font-weight:700;}
+  .today-price-card .current-rate-box{
+    display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+  }
+  .today-price-card .main-val{
+    font-family:'Zilla Slab',serif;
+    font-size:1.9rem;
+    font-weight:700;
+    color:var(--molasses);
+  }
+  .today-price-card .qtl-val{
+    font-size:.92rem;
+    color:var(--ink-soft);
+    background:#ECE3CF;
+    padding:4px 10px;
+    border-radius:4px;
+    font-weight:600;
+  }
+
+  /* Price History Mini Log */
+  .history-box{
+    margin-top:12px;
+    width:100%;
+    border-top:1px dashed var(--line);
+    padding-top:12px;
+  }
+  .history-box summary{
+    font-size:.85rem;
+    font-weight:600;
+    color:var(--caramel-dark);
+    cursor:pointer;
+    user-select:none;
+  }
+  .history-table{
+    width:100%;
+    margin-top:8px;
+    font-size:.82rem;
+    border-collapse:collapse;
+  }
+  .history-table th, .history-table td{
+    padding:6px 8px;
+    text-align:left;
+    border-bottom:1px solid #ECE5D5;
+  }
+  .history-table th{color:var(--ink-soft);font-weight:600;}
 
   /* Cards / forms */
   .card{
@@ -373,14 +418,21 @@
   }
   .status-pill.delivered{background:#DEEBDB;color:var(--ok);}
 
-  footer{border-top:1px solid var(--line);padding:22px 0;color:var(--ink-soft);font-size:.82rem;}
+  footer{
+    border-top:1px solid var(--line);
+    padding:22px 0;
+    color:var(--ink-soft);
+    font-size:.82rem;
+    user-select:none;
+  }
+  #secretOwnerTrigger{cursor:default;}
   .setup-banner{
     background:#FBE9E4;border-bottom:1px solid #D98E80;color:#7A2E1F;
     padding:10px 20px;font-size:.85rem;text-align:center;
   }
 
   @media (max-width:600px){
-    nav.tabs .tab{font-size:.85rem;padding:12px 4px;}
+    nav.tabs .tab{font-size:.9rem;padding:12px 6px;}
     .brand h1{font-size:1.4rem;}
   }
 </style>
@@ -395,15 +447,14 @@
   <div class="hero-bg"></div>
   <div class="hero-content">
     <h1>Bharath Special Icing Sugar</h1>
-    <p class="tagline">Sugar, milled fine — Kalaburagi to your bakery</p>
+    <p class="tagline">Fine Sugar. Better Bakes. Trusted by Bakers.</p>
   </div>
 </div>
 
 <header class="topbar">
   <nav class="tabs">
-    <button class="tab active" data-tab="order">Order</button>
+    <button class="tab active" data-tab="order">Order Online</button>
     <button class="tab" data-tab="track">Track Order</button>
-    <button class="tab" data-tab="owner">Owner</button>
   </nav>
 </header>
 
@@ -418,25 +469,59 @@
       </div>
       <div class="copy">
         <h3>Bharath Special Icing Sugar</h3>
-        <p>Finely milled, packed fresh, and trusted by bakeries across Kalaburagi and beyond.</p>
+        <p>Finely milled, lump-free, packed fresh, and trusted by bakeries across Kalaburagi.</p>
       </div>
     </div>
 
-    <div class="price-ledger">
-      <div class="item">
-        <div class="label">Price per Kg</div>
-        <div class="value" id="priceKgDisplay">₹—</div>
+    <!-- Today's Rate & Price Stability Log -->
+    <div class="today-price-card">
+      <div>
+        <div style="font-size:.78rem;text-transform:uppercase;color:var(--ink-soft);letter-spacing:.05em;font-weight:600;">Today's Rate</div>
+        <div class="current-rate-box">
+          <div class="main-val" id="priceKgDisplay">₹— / kg</div>
+          <div class="qtl-val" id="priceQtlDisplay">₹— / quintal (100 kg)</div>
+        </div>
       </div>
-      <div class="item">
-        <div class="label">Price per Quintal</div>
-        <div class="value" id="priceQtlDisplay">₹—</div>
+      <div style="font-size:.85rem;color:var(--ink-soft);text-align:right;">
+        <strong>Min Order:</strong> 10 kg (Kalaburagi) · 1 Qtl (Outstation)
+        <div id="fssaiLine" style="margin-top:2px;"></div>
       </div>
-      <div class="item">
-        <div class="label">Minimum order</div>
-        <div class="value" style="font-size:1.05rem;">10 kg (Gulbarga) · 1 Qtl (outstation)</div>
-      </div>
+
+      <!-- Rate History (Fluctuates only across long periods) -->
+      <details class="history-box">
+        <summary>View Rate History &amp; Stability Log</summary>
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Effective Period</th>
+              <th>Rate / Kg</th>
+              <th>Rate / Qtl</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Current (2025–Present)</td>
+              <td id="histCurrentKg">₹75</td>
+              <td id="histCurrentQtl">₹7,000</td>
+              <td><span style="color:var(--ok);font-weight:600;">Active Rate</span></td>
+            </tr>
+            <tr>
+              <td>Previous (2023–2024)</td>
+              <td>₹70</td>
+              <td>₹6,600</td>
+              <td>Revised</td>
+            </tr>
+            <tr>
+              <td>Base Period (2021–2022)</td>
+              <td>₹65</td>
+              <td>₹6,200</td>
+              <td>Historical</td>
+            </tr>
+          </tbody>
+        </table>
+      </details>
     </div>
-    <p class="hint" id="fssaiLine" style="margin:-14px 0 20px 2px;"></p>
 
     <div class="card" id="orderFormCard">
       <h2>Place an order</h2>
@@ -577,7 +662,6 @@
         </div>
       </div>
       <p>Save your Order ID to check delivery status anytime in the <strong>Track Order</strong> tab. The mill has already been notified of your order automatically — you don't need to do anything else.</p>
-      <button class="btn secondary small" id="sendWhatsAppBtn" style="margin-top:6px;">Also message us on WhatsApp (optional)</button>
     </div>
 
   </section>
@@ -599,13 +683,13 @@
     <div class="card hidden" id="trackResultCard"></div>
   </section>
 
-  <!-- OWNER PANEL -->
+  <!-- STEALTH OWNER PANEL (Hidden from top tabs) -->
   <section id="owner" class="panel">
     <div class="card" id="ownerLoginCard">
-      <h2>Owner login</h2>
-      <p class="sub">For Bharath Special Icing Sugar's use only.</p>
+      <h2>Owner Portal</h2>
+      <p class="sub">Enter the secret password to access mill settings and order records.</p>
       <label>Password</label>
-      <input type="text" id="ownerPassword">
+      <input type="password" id="ownerPassword">
       <div id="ownerLoginError" class="error-box hidden"></div>
       <button class="btn" id="ownerLoginBtn">Log in</button>
     </div>
@@ -613,7 +697,7 @@
     <div class="hidden" id="ownerDashboard">
       <div class="card">
         <h2>Pricing</h2>
-        <p class="sub">Update anytime — sugar prices move, your site should too.</p>
+        <p class="sub">Update anytime — changes will immediately update the live rates on the website.</p>
         <div class="row">
           <div><label>Price per Kg (₹)</label><input type="number" id="settingPriceKg"></div>
           <div><label>Price per Quintal (₹)</label><input type="number" id="settingPriceQtl"></div>
@@ -624,7 +708,7 @@
 
       <div class="card">
         <h2>Business details</h2>
-        <p class="sub">Shown near the top of the Order page. Leave blank while renewal is pending — it'll just say "renewal in progress" until you fill this in.</p>
+        <p class="sub">Shown near the top of the Order page. Leave blank while renewal is pending.</p>
         <label>FSSAI License No.</label>
         <input type="text" id="settingFssai" placeholder="Leave blank if not yet renewed">
         <button class="btn small" id="saveBusinessBtn" style="margin-top:16px;">Save</button>
@@ -633,7 +717,7 @@
 
       <div class="card">
         <h2>Automatic WhatsApp order alerts</h2>
-        <p class="sub">One-time free setup so you get a WhatsApp message the instant a new order comes in — no customer action needed. See SETUP-GUIDE.md for how to get these two values from CallMeBot (free).</p>
+        <p class="sub">One-time setup so you get a WhatsApp message the instant a new order comes in.</p>
         <div class="row">
           <div><label>CallMeBot API key</label><input type="text" id="settingCallMeBotKey" placeholder="e.g. 123456"></div>
           <div><label>Your WhatsApp number (with country code)</label><input type="text" id="settingCallMeBotPhone" placeholder="917624858405"></div>
@@ -662,11 +746,11 @@
 </main>
 
 <footer class="wrap">
-  Fine Sugar. Better Bakes. Trusted by Bakers.
+  <span id="secretOwnerTrigger">© Bharath Special Icing Sugar · Kalaburagi, Karnataka</span>
 </footer>
 
 <script>
-/* ======================= CONFIG — edit these ======================= */
+/* ======================= CONFIG ======================= */
 const CONFIG = {
   SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzp6Glit-TH9U7grY8G6sskXHZZ4Nsq0NdQKHRfdXfyOOwWqUevzsR98ETWSwn1BQU/exec",
   UPI_ID: "Q380321909@ybl",
@@ -676,7 +760,7 @@ const CONFIG = {
   MIN_QUINTAL_OUTSTATION: 1,
   LOCAL_CITY_KEYWORDS: ["gulbarga","kalaburagi","kalburgi"]
 };
-/* ===================================================================== */
+/* ====================================================== */
 
 const STATUS_STEPS = ["Order Received","Confirmed","In Production","Dispatched","In Transit","Delivered"];
 const DEMO_MODE = !CONFIG.SCRIPT_URL;
@@ -686,7 +770,7 @@ const demoStore = {
   orders: []
 };
 
-// Tabs
+// Tabs (Only Order and Track visible)
 document.querySelectorAll('nav.tabs .tab').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('nav.tabs .tab').forEach(b=>b.classList.remove('active'));
@@ -694,6 +778,22 @@ document.querySelectorAll('nav.tabs .tab').forEach(btn=>{
     btn.classList.add('active');
     document.getElementById(btn.dataset.tab).classList.add('active');
   });
+});
+
+/* Stealth Owner Access: Triple-click footer text */
+let footerClickCount = 0;
+let footerClickTimer = null;
+document.getElementById('secretOwnerTrigger').addEventListener('click', ()=>{
+  footerClickCount++;
+  clearTimeout(footerClickTimer);
+  footerClickTimer = setTimeout(()=>{ footerClickCount = 0; }, 1000);
+  if (footerClickCount >= 3) {
+    footerClickCount = 0;
+    document.querySelectorAll('nav.tabs .tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById('owner').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 });
 
 if (DEMO_MODE) {
@@ -717,7 +817,7 @@ function demoApi(method, p) {
     if (p.action === 'settings') return { ok:true, pricePerKg: demoStore.settings.pricePerKg, pricePerQuintal: demoStore.settings.pricePerQuintal, fssai: demoStore.settings.fssai };
     if (p.action === 'track') {
       const o = demoStore.orders.find(o=>o.OrderID===p.id);
-      return o ? { ok:true, order:o } : { ok:false, error:'Order not found (demo mode — data resets on page reload)' };
+      return o ? { ok:true, order:o } : { ok:false, error:'Order not found (demo mode)' };
     }
     if (p.action === 'list') {
       if (p.password !== demoStore.settings.ownerPassword) return { ok:false, error:'Wrong password' };
@@ -755,16 +855,18 @@ function demoApi(method, p) {
 }
 
 // Load prices
-let currentPrices = { pricePerKg: 0, pricePerQuintal: 0 };
+let currentPrices = { pricePerKg: 75, pricePerQuintal: 7000 };
 async function loadPrices() {
   const r = await apiGet({ action:'settings' });
   if (r.ok) {
     currentPrices = r;
-    document.getElementById('priceKgDisplay').textContent = '₹' + r.pricePerKg;
-    document.getElementById('priceQtlDisplay').textContent = '₹' + r.pricePerQuintal;
+    document.getElementById('priceKgDisplay').textContent = '₹' + r.pricePerKg + ' / kg';
+    document.getElementById('priceQtlDisplay').textContent = '₹' + Number(r.pricePerQuintal).toLocaleString('en-IN') + ' / quintal (100 kg)';
+    document.getElementById('histCurrentKg').textContent = '₹' + r.pricePerKg;
+    document.getElementById('histCurrentQtl').textContent = '₹' + Number(r.pricePerQuintal).toLocaleString('en-IN');
     document.getElementById('fssaiLine').textContent = r.fssai
       ? `FSSAI Lic. No. ${r.fssai}`
-      : 'FSSAI license renewal in progress';
+      : 'FSSAI renewal in progress';
   }
 }
 loadPrices();
@@ -804,7 +906,7 @@ function updateAmountPreview(){
   const unit = document.getElementById('custUnit').value;
   const price = unit==='Quintal' ? currentPrices.pricePerQuintal : currentPrices.pricePerKg;
   const amount = qty*price;
-  document.getElementById('amountPreview').textContent = amount ? `Estimated amount: ₹${amount.toLocaleString('en-IN')} (plus delivery charge, if applicable)` : '';
+  document.getElementById('amountPreview').textContent = amount ? `Estimated amount: ₹${amount.toLocaleString('en-IN')} (plus transport charge, if applicable)` : '';
 }
 
 // Copy UPI ID
@@ -879,20 +981,6 @@ document.getElementById('confirmOrderBtn').addEventListener('click', async ()=>{
   document.getElementById('orderResultCard').classList.remove('hidden');
   document.getElementById('resultOrderId').textContent = r.orderId;
   window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  const msg = `New order from Bharath Special Icing Sugar website:\n` +
-    `Order ID: ${r.orderId}\n` +
-    `Name: ${pendingOrder.name}\n` +
-    `Phone: ${pendingOrder.phone}\n` +
-    `${pendingOrder.deliveryType==='Delivery' ? 'Delivery to: '+pendingOrder.city+' — '+pendingOrder.address : 'Self-pickup'}\n` +
-    `Quantity: ${pendingOrder.quantity} ${pendingOrder.unit}\n` +
-    `Amount: ₹${pendingOrder.amount}\n` +
-    `Payment ref: ${ref || 'not provided'}` +
-    (pendingOrder.notes ? `\nNotes: ${pendingOrder.notes}` : '');
-
-  document.getElementById('sendWhatsAppBtn').onclick = ()=>{
-    window.open(`https://wa.me/${CONFIG.OWNER_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
-  };
 });
 
 // Track order
@@ -922,7 +1010,7 @@ document.getElementById('trackForm').addEventListener('submit', async (e)=>{
   resultCard.classList.remove('hidden');
 });
 
-// Owner login & dashboard
+// Stealth Owner Login
 let ownerPasswordCache = '';
 document.getElementById('ownerLoginBtn').addEventListener('click', async ()=>{
   const pw = document.getElementById('ownerPassword').value;
@@ -974,6 +1062,7 @@ document.getElementById('savePricingBtn').addEventListener('click', async ()=>{
     const saved = document.getElementById('pricingSaved');
     saved.classList.remove('hidden');
     setTimeout(()=>saved.classList.add('hidden'), 2000);
+    loadPrices();
   } else {
     alert('Could not save: ' + (r.error||''));
   }
