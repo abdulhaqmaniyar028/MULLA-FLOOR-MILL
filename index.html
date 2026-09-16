@@ -478,7 +478,7 @@
 <body>
 
 <div id="setupBanner" class="setup-banner hidden">
-  Setup needed: open index.html and set SCRIPT_URL in the CONFIG section at the top of the script.
+  Setup needed: open index.html and set SCRIPT_URL in CONFIG.
 </div>
 
 <div class="hero">
@@ -536,7 +536,7 @@
             </tr>
           </thead>
           <tbody id="rateHistoryBody">
-            <!-- Dynamically injected -->
+            <!-- Dynamic sync -->
           </tbody>
         </table>
         <div id="customerMoreBox" class="hidden" style="text-align:center;margin-top:6px;">
@@ -724,18 +724,16 @@
     <div class="hidden" id="ownerDashboard">
       <div class="card">
         <h2>Today's Live Pricing</h2>
-        <p class="sub">Change the active rate billed to new orders anytime.</p>
+        <p class="sub">Change the active rate billed to new orders across all devices.</p>
         <div class="row">
           <div><label>Today's Price per Kg (₹)</label><input type="number" id="settingPriceKg"></div>
           <div><label>Today's Price per Quintal (₹)</label><input type="number" id="settingPriceQtl"></div>
         </div>
 
         <h3 style="margin-top:28px;font-size:1.15rem;">Rate History &amp; Dates Changed</h3>
-        <p class="sub">Select dates when prices changed. You can add new dates, remove entries, or wipe history completely.</p>
+        <p class="sub">Saved in the cloud — changes show up immediately for every customer on all phones and computers.</p>
         
-        <div id="historyRowsContainer">
-          <!-- Dynamic history rows injected here -->
-        </div>
+        <div id="historyRowsContainer"></div>
 
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;">
           <button type="button" class="btn secondary small" id="addHistoryRowBtn">➕ Add Another Date</button>
@@ -745,7 +743,7 @@
 
         <div style="margin-top:20px;">
           <button class="btn small" id="savePricingBtn">Save all prices</button>
-          <span id="pricingSaved" class="hint hidden" style="color:var(--ok);margin-left:10px;">Saved successfully!</span>
+          <span id="pricingSaved" class="hint hidden" style="color:var(--ok);margin-left:10px;">Saved to cloud!</span>
         </div>
       </div>
 
@@ -800,7 +798,7 @@ const STATUS_STEPS = ["Order Received","Confirmed","In Production","Dispatched",
 const DEMO_MODE = !CONFIG.SCRIPT_URL;
 
 const demoStore = {
-  settings: { pricePerKg: 75, pricePerQuintal: 7000, ownerPassword: "mullan123", callMeBotApiKey: "", callMeBotPhone: "" },
+  settings: { pricePerKg: 75, pricePerQuintal: 7000, ownerPassword: "mullan123", callMeBotApiKey: "", callMeBotPhone: "", priceHistory: [] },
   orders: []
 };
 
@@ -848,7 +846,7 @@ async function apiPost(body) {
 }
 function demoApi(method, p) {
   if (method === 'GET') {
-    if (p.action === 'settings') return { ok:true, pricePerKg: demoStore.settings.pricePerKg, pricePerQuintal: demoStore.settings.pricePerQuintal };
+    if (p.action === 'settings') return { ok:true, pricePerKg: demoStore.settings.pricePerKg, pricePerQuintal: demoStore.settings.pricePerQuintal, priceHistory: demoStore.settings.priceHistory };
     if (p.action === 'track') {
       const o = demoStore.orders.find(o=>o.OrderID===p.id);
       return o ? { ok:true, order:o } : { ok:false, error:'Order not found (demo mode)' };
@@ -890,6 +888,7 @@ function demoApi(method, p) {
       if (p.newPassword) demoStore.settings.ownerPassword = p.newPassword;
       if (p.callMeBotApiKey !== undefined) demoStore.settings.callMeBotApiKey = p.callMeBotApiKey;
       if (p.callMeBotPhone !== undefined) demoStore.settings.callMeBotPhone = p.callMeBotPhone;
+      if (p.priceHistory !== undefined) demoStore.settings.priceHistory = p.priceHistory;
       return { ok:true };
     }
   }
@@ -897,18 +896,11 @@ function demoApi(method, p) {
 }
 
 /* ======================================================
-   DYNAMIC DATE-BASED PRICE HISTORY SYSTEM
+   CLOUD-SYNCED DATE-BASED PRICE HISTORY
    ====================================================== */
+let cloudPriceHistory = [];
 let showAllCustomerHistory = false;
 let showAllOwnerHistory = false;
-
-function getStoredDateHistory() {
-  try {
-    const list = JSON.parse(localStorage.getItem('bsi_date_price_history'));
-    if (Array.isArray(list)) return list;
-  } catch(e){}
-  return [];
-}
 
 function formatDateDisplay(dateStr) {
   if (!dateStr) return 'Earlier Record';
@@ -924,7 +916,7 @@ function formatDateDisplay(dateStr) {
 
 function renderCustomerHistory(currentKg, currentQtl) {
   const tbody = document.getElementById('rateHistoryBody');
-  const list = getStoredDateHistory().filter(item => item.date || item.kg || item.qtl);
+  const list = (cloudPriceHistory || []).filter(item => item && (item.date || item.kg || item.qtl));
 
   let html = `
     <tr>
@@ -978,11 +970,10 @@ document.getElementById('custToggleMoreBtn').addEventListener('click', ()=>{
   renderCustomerHistory(currentPrices.pricePerKg, currentPrices.pricePerQuintal);
 });
 
-// Render Owner Edit Rows
 function renderOwnerHistoryInputs() {
   const container = document.getElementById('historyRowsContainer');
   container.innerHTML = '';
-  const list = getStoredDateHistory();
+  const list = cloudPriceHistory || [];
 
   if (list.length === 0) {
     container.innerHTML = `
@@ -1039,36 +1030,35 @@ document.getElementById('ownerToggleAllBtn').addEventListener('click', ()=>{
 });
 
 document.getElementById('addHistoryRowBtn').addEventListener('click', ()=>{
-  const list = collectCurrentOwnerInputs();
-  list.push({ date: '', kg: '', qtl: '' });
-  localStorage.setItem('bsi_date_price_history', JSON.stringify(list));
+  cloudPriceHistory = collectCurrentOwnerInputs();
+  cloudPriceHistory.push({ date: '', kg: '', qtl: '' });
   showAllOwnerHistory = true;
   renderOwnerHistoryInputs();
 });
 
-// Remove individual row (No block/restriction)
 function removeHistoryRow(index) {
-  const list = collectCurrentOwnerInputs();
-  list.splice(index, 1);
-  localStorage.setItem('bsi_date_price_history', JSON.stringify(list));
+  cloudPriceHistory = collectCurrentOwnerInputs();
+  cloudPriceHistory.splice(index, 1);
   renderOwnerHistoryInputs();
   renderCustomerHistory(currentPrices.pricePerKg, currentPrices.pricePerQuintal);
 }
 
-// Reset / Clear All History Button
-document.getElementById('resetHistoryBtn').addEventListener('click', ()=>{
-  if (confirm('Are you sure you want to clear all recorded price change dates? This will remove all demo or older date logs.')) {
-    localStorage.removeItem('bsi_date_price_history');
+document.getElementById('resetHistoryBtn').addEventListener('click', async ()=>{
+  if (confirm('Are you sure you want to clear all recorded price change dates? This will clear them for ALL devices.')) {
+    cloudPriceHistory = [];
     renderOwnerHistoryInputs();
     renderCustomerHistory(currentPrices.pricePerKg, currentPrices.pricePerQuintal);
-    alert('Price history has been reset successfully.');
+    if (ownerPasswordCache) {
+      await apiPost({ action:'updateSettings', password: ownerPasswordCache, priceHistory: [] });
+    }
+    alert('Price history has been reset successfully across all devices.');
   }
 });
 
 function collectCurrentOwnerInputs() {
   const container = document.getElementById('historyRowsContainer');
   const rows = container.querySelectorAll('.history-edit-row');
-  const list = getStoredDateHistory();
+  const list = [...(cloudPriceHistory || [])];
 
   rows.forEach(r => {
     const idx = Number(r.dataset.index);
@@ -1081,13 +1071,14 @@ function collectCurrentOwnerInputs() {
   return list;
 }
 
-// Load prices & dynamic history
+// Load prices & dynamic cloud history
 let currentPrices = { pricePerKg: 75, pricePerQuintal: 7000 };
 
 async function loadPrices() {
   const r = await apiGet({ action:'settings' });
   if (r.ok) {
     currentPrices = r;
+    cloudPriceHistory = r.priceHistory || [];
     document.getElementById('priceKgDisplay').textContent = '₹' + r.pricePerKg + ' / kg';
     document.getElementById('priceQtlDisplay').textContent = '₹' + Number(r.pricePerQuintal).toLocaleString('en-IN') + ' / quintal (100 kg)';
     renderCustomerHistory(r.pricePerKg, r.pricePerQuintal);
@@ -1298,6 +1289,7 @@ document.getElementById('ownerLoginBtn').addEventListener('click', async ()=>{
   document.getElementById('settingPriceKg').value = r.settings.pricePerKg;
   document.getElementById('settingPriceQtl').value = r.settings.pricePerQuintal;
 
+  cloudPriceHistory = r.settings.priceHistory || [];
   renderOwnerHistoryInputs();
 
   document.getElementById('settingCallMeBotKey').value = r.settings.callMeBotApiKey || '';
@@ -1322,16 +1314,23 @@ document.getElementById('savePricingBtn').addEventListener('click', async ()=>{
   const pricePerKg = document.getElementById('settingPriceKg').value;
   const pricePerQuintal = document.getElementById('settingPriceQtl').value;
 
-  const updatedHistory = collectCurrentOwnerInputs().filter(h => h.date || h.kg || h.qtl);
+  const updatedHistory = collectCurrentOwnerInputs().filter(h => h && (h.date || h.kg || h.qtl));
   updatedHistory.sort((a,b) => (b.date || '').localeCompare(a.date || ''));
-  localStorage.setItem('bsi_date_price_history', JSON.stringify(updatedHistory));
+  cloudPriceHistory = updatedHistory;
 
-  const r = await apiPost({ action:'updateSettings', password: ownerPasswordCache, pricePerKg, pricePerQuintal });
+  const r = await apiPost({ 
+    action:'updateSettings', 
+    password: ownerPasswordCache, 
+    pricePerKg, 
+    pricePerQuintal,
+    priceHistory: updatedHistory
+  });
+
   if (r.ok) {
     const saved = document.getElementById('pricingSaved');
     saved.classList.remove('hidden');
     setTimeout(()=>saved.classList.add('hidden'), 2500);
-    loadPrices();
+    renderCustomerHistory(pricePerKg, pricePerQuintal);
     renderOwnerHistoryInputs();
   } else {
     alert('Could not save: ' + (r.error||''));
