@@ -17,6 +17,9 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://bharath-icing-sugar.github.io/bharath-special-icing-sugar/">
 <meta property="og:image" content="https://bharath-icing-sugar.github.io/bharath-special-icing-sugar/product-bag.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --cream:#F6F0E4;
@@ -519,7 +522,7 @@
         </div>
       </div>
       <div style="font-size:.85rem;color:var(--ink-soft);text-align:right;">
-        <strong>Min Order:</strong> 10 kg (Kalaburagi) · 1 Qtl (Outstation)
+        <strong>Min Order:</strong> 5 kg (Kalaburagi) · 50 kg / 0.5 Qtl (Outstation)
       </div>
 
       <details class="history-box" id="historyDetailsBox">
@@ -775,8 +778,8 @@
 const CONFIG = {
   SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzp6Glit-TH9U7grY8G6sskXHZZ4Nsq0NdQKHRfdXfyOOwWqUevzsR98ETWSwn1BQU/exec",
   UPI_ID: "Q380321909@ybl",
-  MIN_KG_LOCAL: 10,
-  MIN_QUINTAL_OUTSTATION: 1,
+  MIN_KG_LOCAL: 5,
+  MIN_QUINTAL_OUTSTATION: 0.5,
   LOCAL_CITY_KEYWORDS: ["gulbarga","kalaburagi","kalburgi"]
 };
 /* ====================================================== */
@@ -1056,8 +1059,8 @@ function updateMinHint(){
   const city = document.getElementById('custCity').value;
   const local = type==='Pickup' ? true : isLocalCity(city);
   document.getElementById('minHint').textContent = local
-    ? `Minimum order within Gulbarga: ${CONFIG.MIN_KG_LOCAL} kg`
-    : `Minimum order for outstation delivery: ${CONFIG.MIN_QUINTAL_OUTSTATION} quintal`;
+    ? `Minimum order within Kalaburagi: ${CONFIG.MIN_KG_LOCAL} kg`
+    : `Minimum order for outstation delivery: 50 kg (${CONFIG.MIN_QUINTAL_OUTSTATION} quintal)`;
 }
 document.getElementById('custCity').addEventListener('input', updateMinHint);
 updateMinHint();
@@ -1118,11 +1121,11 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
   }
   const local = deliveryType==='Pickup' ? true : isLocalCity(city);
   if (local && unit==='Kg' && qty < CONFIG.MIN_KG_LOCAL) {
-    errBox.textContent = `Minimum order within Gulbarga is ${CONFIG.MIN_KG_LOCAL} kg.`;
+    errBox.textContent = `Minimum order within Kalaburagi is ${CONFIG.MIN_KG_LOCAL} kg.`;
     errBox.classList.remove('hidden'); return;
   }
-  if (!local && (unit==='Kg' ? qty < CONFIG.MIN_QUINTAL_OUTSTATION*100 : qty < CONFIG.MIN_QUINTAL_OUTSTATION)) {
-    errBox.textContent = `Minimum order for outstation delivery is ${CONFIG.MIN_QUINTAL_OUTSTATION} quintal.`;
+  if (!local && (unit==='Kg' ? qty < (CONFIG.MIN_QUINTAL_OUTSTATION * 100) : qty < CONFIG.MIN_QUINTAL_OUTSTATION)) {
+    errBox.textContent = `Minimum order for outstation delivery is 50 kg (${CONFIG.MIN_QUINTAL_OUTSTATION} quintal).`;
     errBox.classList.remove('hidden'); return;
   }
 
@@ -1260,7 +1263,6 @@ document.getElementById('savePricingBtn').addEventListener('click', async ()=>{
   let historyList = collectCurrentOwnerInputs().filter(h => h && (h.date || h.kg || h.qtl));
   const todayStr = getTodayISODate();
 
-  // If there was an active rate that differs from the new rate, archive the old rate with today's date
   if (currentPrices.pricePerKg && (currentPrices.pricePerKg != newKg || currentPrices.pricePerQuintal != newQtl)) {
     const alreadyExists = historyList.some(h => h.date === todayStr);
     if (!alreadyExists) {
