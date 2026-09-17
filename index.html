@@ -6,14 +6,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bharath Special Icing Sugar — Order Online</title>
 
-<meta name="description" content="Order Bharath Special Icing Sugar online in Kalaburagi (Gulbarga). Fine, lump-free icing sugar for bakeries and home bakers with fast delivery across Karnataka.">
-<meta name="keywords" content="Bharath Special Icing Sugar, icing sugar Gulbarga, icing sugar Kalaburagi, powdered sugar Karnataka, bakery icing sugar supplier">
+<meta name="description" content="Order Bharath Special Icing Sugar online in Kalaburagi (Gulbarga). Fine, lump-free icing sugar for bakeries and home bakers with fast Pan-India delivery across all states.">
+<meta name="keywords" content="Bharath Special Icing Sugar, icing sugar Gulbarga, icing sugar Kalaburagi, powdered sugar Karnataka, bakery icing sugar supplier, all India sugar transport">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://bharath-icing-sugar.github.io/bharath-special-icing-sugar/">
 
 <!-- Open Graph for WhatsApp & Social Previews -->
 <meta property="og:title" content="Bharath Special Icing Sugar — Order Online">
-<meta property="og:description" content="Fine Sugar. Better Bakes. Trusted by Bakers across Kalaburagi. Order online with live rate updates.">
+<meta property="og:description" content="Fine Sugar. Better Bakes. Trusted by Bakers across India. Order online with live rate updates and Pan-India dispatch.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://bharath-icing-sugar.github.io/bharath-special-icing-sugar/">
 <meta property="og:image" content="https://bharath-icing-sugar.github.io/bharath-special-icing-sugar/product-bag.jpg">
@@ -486,7 +486,7 @@
   <div class="hero-bg"></div>
   <div class="hero-content">
     <h1>Bharath Special Icing Sugar</h1>
-    <p class="tagline">Fine Sugar. Better Bakes. Trusted by Bakers.</p>
+    <p class="tagline">Fine Sugar. Better Bakes. Trusted by Bakers Across India.</p>
   </div>
 </div>
 
@@ -508,7 +508,7 @@
       </div>
       <div class="copy">
         <h3>Bharath Special Icing Sugar</h3>
-        <p>Finely milled, lump-free, packed fresh, and trusted by bakeries across Kalaburagi.</p>
+        <p>Finely milled, lump-free, packed fresh, and supplied to bakeries across India.</p>
       </div>
     </div>
 
@@ -556,7 +556,7 @@
         <div class="row">
           <div>
             <label>Your name</label>
-            <input type="text" id="custName" required>
+            <input type="text" id="custName" required placeholder="Full Name or Bakery Name">
           </div>
           <div>
             <label>Phone number</label>
@@ -566,22 +566,32 @@
 
         <label>How will you get your order?</label>
         <div class="radio-group" id="deliveryTypeGroup">
-          <label class="opt selected"><input type="radio" name="deliveryType" value="Pickup" checked> Self-pickup from mill</label>
-          <label class="opt"><input type="radio" name="deliveryType" value="Delivery"> Delivery via transport</label>
+          <label class="opt selected"><input type="radio" name="deliveryType" value="Pickup" checked> Self-pickup from mill (Kalaburagi)</label>
+          <label class="opt"><input type="radio" name="deliveryType" value="Delivery"> Pan-India Transport Delivery</label>
         </div>
 
         <div id="addressFields" class="hidden">
+          <div style="background:#F4EFEB;border:1px solid var(--line);border-radius:4px;padding:8px 12px;margin:12px 0 6px 0;font-size:.85rem;color:var(--molasses);font-weight:600;">
+            🚚 Pan-India Delivery Available (All States &amp; Cities across India)
+          </div>
           <div class="row">
             <div>
               <label>City / Town</label>
-              <input type="text" id="custCity" placeholder="e.g. Humnabad, Wadi, Shahabad...">
+              <input type="text" id="custCity" placeholder="e.g. Bengaluru, Hyderabad, Pune, Mumbai...">
             </div>
             <div>
-              <label>Full delivery address</label>
-              <input type="text" id="custAddress">
+              <label>PIN Code</label>
+              <input type="text" id="custPincode" placeholder="6-digit PIN code" maxlength="6">
             </div>
           </div>
-          <p class="hint">Delivery charge depends on the transport used — we'll confirm the exact amount on WhatsApp once your order is dispatched.</p>
+          
+          <label>Address Line 1 (Shop / Bakery / House No, Street, Area)</label>
+          <input type="text" id="custAddress" placeholder="Street address, landmark, area">
+
+          <label>Address Line 2 (Optional - Landmark, Building, Floor)</label>
+          <input type="text" id="custAddress2" placeholder="Apartment, suite, landmark, unit (optional)">
+
+          <p class="hint">Delivery charge depends on your city's transport hub / cargo service — we'll confirm the exact transport LR &amp; charge on WhatsApp once dispatched.</p>
         </div>
 
         <div class="row">
@@ -600,7 +610,7 @@
         <p class="hint" id="minHint"></p>
 
         <label>Notes (optional)</label>
-        <textarea id="custNotes" placeholder="Anything else we should know"></textarea>
+        <textarea id="custNotes" placeholder="Transport preference or special packaging instructions (optional)"></textarea>
 
         <div id="amountPreview" class="hint" style="font-size:.95rem;margin-top:12px;color:var(--molasses);font-weight:600;"></div>
         <div id="orderError" class="error-box hidden"></div>
@@ -1060,7 +1070,7 @@ function updateMinHint(){
   const local = type==='Pickup' ? true : isLocalCity(city);
   document.getElementById('minHint').textContent = local
     ? `Minimum order within Kalaburagi: ${CONFIG.MIN_KG_LOCAL} kg`
-    : `Minimum order for outstation delivery: 50 kg (${CONFIG.MIN_QUINTAL_OUTSTATION} quintal)`;
+    : `Minimum order for Pan-India outstation delivery: 50 kg (${CONFIG.MIN_QUINTAL_OUTSTATION} quintal)`;
 }
 document.getElementById('custCity').addEventListener('input', updateMinHint);
 updateMinHint();
@@ -1104,7 +1114,9 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
   const phone = document.getElementById('custPhone').value.trim();
   const deliveryType = currentDeliveryType();
   const city = document.getElementById('custCity').value.trim();
-  const address = document.getElementById('custAddress').value.trim();
+  const pincode = document.getElementById('custPincode').value.trim();
+  const address1 = document.getElementById('custAddress').value.trim();
+  const address2 = document.getElementById('custAddress2').value.trim();
   const qty = Number(document.getElementById('custQty').value);
   const unit = document.getElementById('custUnit').value;
   const notes = document.getElementById('custNotes').value.trim();
@@ -1114,23 +1126,51 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
     errBox.classList.remove('hidden');
     return;
   }
-  if (deliveryType === 'Delivery' && (!city || !address)) {
-    errBox.textContent = 'Please enter your city and delivery address.';
-    errBox.classList.remove('hidden');
-    return;
+  
+  if (deliveryType === 'Delivery') {
+    if (!city) {
+      errBox.textContent = 'Please enter your City / Town.';
+      errBox.classList.remove('hidden');
+      return;
+    }
+    if (!pincode || !/^\d{6}$/.test(pincode)) {
+      errBox.textContent = 'Please enter a valid 6-digit PIN code.';
+      errBox.classList.remove('hidden');
+      return;
+    }
+    if (!address1) {
+      errBox.textContent = 'Please enter Address Line 1.';
+      errBox.classList.remove('hidden');
+      return;
+    }
   }
+
+  const fullAddress = deliveryType === 'Delivery'
+    ? `${address1}${address2 ? ', ' + address2 : ''} (PIN: ${pincode})`
+    : '';
+
   const local = deliveryType==='Pickup' ? true : isLocalCity(city);
   if (local && unit==='Kg' && qty < CONFIG.MIN_KG_LOCAL) {
     errBox.textContent = `Minimum order within Kalaburagi is ${CONFIG.MIN_KG_LOCAL} kg.`;
     errBox.classList.remove('hidden'); return;
   }
   if (!local && (unit==='Kg' ? qty < (CONFIG.MIN_QUINTAL_OUTSTATION * 100) : qty < CONFIG.MIN_QUINTAL_OUTSTATION)) {
-    errBox.textContent = `Minimum order for outstation delivery is 50 kg (${CONFIG.MIN_QUINTAL_OUTSTATION} quintal).`;
+    errBox.textContent = `Minimum order for Pan-India outstation delivery is 50 kg (${CONFIG.MIN_QUINTAL_OUTSTATION} quintal).`;
     errBox.classList.remove('hidden'); return;
   }
 
   const price = unit==='Quintal' ? currentPrices.pricePerQuintal : currentPrices.pricePerKg;
-  pendingOrder = { name, phone, deliveryType, city, address, quantity:qty, unit, notes, amount: qty*price };
+  pendingOrder = { 
+    name, 
+    phone, 
+    deliveryType, 
+    city: city || 'Kalaburagi', 
+    address: fullAddress, 
+    quantity: qty, 
+    unit, 
+    notes, 
+    amount: qty*price 
+  };
 
   document.getElementById('payAmountText').textContent = '₹' + Number(pendingOrder.amount).toLocaleString('en-IN');
   document.getElementById('orderFormCard').classList.add('hidden');
@@ -1313,7 +1353,7 @@ function renderOrders(orders){
       <td>${o.Name}<br><span class="hint">${o.Phone}</span></td>
       <td>${o.Quantity} ${o.Unit}</td>
       <td>₹${o.Amount}</td>
-      <td>${o.DeliveryType}${o.DeliveryType==='Delivery' ? '<br><span class="hint">'+(o.City||'')+'</span>' : ''}</td>
+      <td>${o.DeliveryType}${o.DeliveryType==='Delivery' ? '<br><span class="hint">'+(o.City||'')+'<br>'+(o.Address||'')+'</span>' : ''}</td>
       <td><select class="status-select">${statusOptions}</select></td>
       <td><input type="number" class="charge-input" value="${o.DeliveryCharge||''}" placeholder="₹" ${o.DeliveryType!=='Delivery'?'disabled':''}></td>
       <td>
