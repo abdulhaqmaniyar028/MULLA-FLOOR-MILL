@@ -522,7 +522,7 @@
         </div>
       </div>
       <div style="font-size:.85rem;color:var(--ink-soft);text-align:right;">
-        <strong>Min Order:</strong> 5 kg (Kalaburagi) · 50 kg / 0.5 Qtl (Outstation)
+        <strong>Min Order:</strong> 5 kg (Kalaburagi) · 50 kg (Outstation)
       </div>
 
       <details class="history-box" id="historyDetailsBox">
@@ -591,20 +591,17 @@
           <label>Address Line 2 (Optional - Landmark, Building, Floor)</label>
           <input type="text" id="custAddress2" placeholder="Apartment, suite, landmark, unit (optional)">
 
-          <p class="hint">Delivery charge depends on your city's transport hub / cargo service — we'll confirm the exact transport LR &amp; charge on WhatsApp once dispatched.</p>
+          <p class="hint">Delivery charge depends on your city's transport cargo service — we'll confirm the exact transport LR &amp; charge on WhatsApp once dispatched.</p>
         </div>
 
         <div class="row">
-          <div>
-            <label>Quantity</label>
-            <input type="number" id="custQty" min="0.1" step="0.1" required>
+          <div style="flex:2;">
+            <label>Quantity to order (in Kilograms / Kg)</label>
+            <input type="number" id="custQty" min="1" step="1" required placeholder="Enter total kg (e.g. 5, 50, 100, 500)">
           </div>
-          <div>
+          <div style="flex:1;">
             <label>Unit</label>
-            <select id="custUnit">
-              <option value="Kg">Kg</option>
-              <option value="Quintal">Quintal (100 kg)</option>
-            </select>
+            <input type="text" value="Kg" readonly style="background:#EFE6CE;font-weight:700;color:var(--molasses);cursor:not-allowed;text-align:center;">
           </div>
         </div>
         <p class="hint" id="minHint"></p>
@@ -789,7 +786,7 @@ const CONFIG = {
   SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzp6Glit-TH9U7grY8G6sskXHZZ4Nsq0NdQKHRfdXfyOOwWqUevzsR98ETWSwn1BQU/exec",
   UPI_ID: "Q380321909@ybl",
   MIN_KG_LOCAL: 5,
-  MIN_QUINTAL_OUTSTATION: 0.5,
+  MIN_KG_OUTSTATION: 50,
   LOCAL_CITY_KEYWORDS: ["gulbarga","kalaburagi","kalburgi"]
 };
 /* ====================================================== */
@@ -1054,6 +1051,7 @@ document.querySelectorAll('#deliveryTypeGroup input').forEach(radio=>{
     radio.closest('.opt').classList.add('selected');
     document.getElementById('addressFields').classList.toggle('hidden', radio.value !== 'Delivery');
     updateMinHint();
+    updateAmountPreview();
   });
 });
 
@@ -1070,23 +1068,35 @@ function updateMinHint(){
   const local = type==='Pickup' ? true : isLocalCity(city);
   document.getElementById('minHint').textContent = local
     ? `Minimum order within Kalaburagi: ${CONFIG.MIN_KG_LOCAL} kg`
-    : `Minimum order for Pan-India outstation delivery: 50 kg (${CONFIG.MIN_QUINTAL_OUTSTATION} quintal)`;
+    : `Minimum order for Pan-India outstation delivery: ${CONFIG.MIN_KG_OUTSTATION} kg`;
 }
-document.getElementById('custCity').addEventListener('input', updateMinHint);
+document.getElementById('custCity').addEventListener('input', ()=>{
+  updateMinHint();
+  updateAmountPreview();
+});
 updateMinHint();
 
 document.getElementById('custQty').addEventListener('input', updateAmountPreview);
-document.getElementById('custUnit').addEventListener('change', updateAmountPreview);
+
 function updateAmountPreview(){
-  const qty = Number(document.getElementById('custQty').value)||0;
-  const unit = document.getElementById('custUnit').value;
+  const qty = Number(document.getElementById('custQty').value) || 0;
   if (!currentPrices.pricePerKg) {
     document.getElementById('amountPreview').textContent = 'Pricing will calculate once rate is announced.';
     return;
   }
-  const price = unit==='Quintal' ? currentPrices.pricePerQuintal : currentPrices.pricePerKg;
-  const amount = qty*price;
-  document.getElementById('amountPreview').textContent = amount ? `Estimated amount: ₹${amount.toLocaleString('en-IN')} (plus transport charge, if applicable)` : '';
+
+  const ratePerKg = (qty >= 100 && currentPrices.pricePerQuintal)
+    ? (currentPrices.pricePerQuintal / 100)
+    : currentPrices.pricePerKg;
+
+  const amount = Math.round(qty * ratePerKg);
+  if (amount > 0) {
+    let note = `Estimated amount: ₹${amount.toLocaleString('en-IN')} (at ₹${ratePerKg}/kg)`;
+    if (qty >= 100) note += ` — Bulk Quintal Rate applied!`;
+    document.getElementById('amountPreview').textContent = note;
+  } else {
+    document.getElementById('amountPreview').textContent = '';
+  }
 }
 
 // Copy UPI ID
@@ -1118,7 +1128,6 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
   const address1 = document.getElementById('custAddress').value.trim();
   const address2 = document.getElementById('custAddress2').value.trim();
   const qty = Number(document.getElementById('custQty').value);
-  const unit = document.getElementById('custUnit').value;
   const notes = document.getElementById('custNotes').value.trim();
 
   if (!/^\d{10}$/.test(phone)) {
@@ -1145,21 +1154,26 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
     }
   }
 
+  const local = deliveryType==='Pickup' ? true : isLocalCity(city);
+  if (local && qty < CONFIG.MIN_KG_LOCAL) {
+    errBox.textContent = `Minimum order within Kalaburagi is ${CONFIG.MIN_KG_LOCAL} kg.`;
+    errBox.classList.remove('hidden'); return;
+  }
+  if (!local && qty < CONFIG.MIN_KG_OUTSTATION) {
+    errBox.textContent = `Minimum order for Pan-India outstation delivery is ${CONFIG.MIN_KG_OUTSTATION} kg.`;
+    errBox.classList.remove('hidden'); return;
+  }
+
+  const ratePerKg = (qty >= 100 && currentPrices.pricePerQuintal)
+    ? (currentPrices.pricePerQuintal / 100)
+    : currentPrices.pricePerKg;
+
+  const totalAmount = Math.round(qty * ratePerKg);
+
   const fullAddress = deliveryType === 'Delivery'
     ? `${address1}${address2 ? ', ' + address2 : ''} (PIN: ${pincode})`
     : '';
 
-  const local = deliveryType==='Pickup' ? true : isLocalCity(city);
-  if (local && unit==='Kg' && qty < CONFIG.MIN_KG_LOCAL) {
-    errBox.textContent = `Minimum order within Kalaburagi is ${CONFIG.MIN_KG_LOCAL} kg.`;
-    errBox.classList.remove('hidden'); return;
-  }
-  if (!local && (unit==='Kg' ? qty < (CONFIG.MIN_QUINTAL_OUTSTATION * 100) : qty < CONFIG.MIN_QUINTAL_OUTSTATION)) {
-    errBox.textContent = `Minimum order for Pan-India outstation delivery is 50 kg (${CONFIG.MIN_QUINTAL_OUTSTATION} quintal).`;
-    errBox.classList.remove('hidden'); return;
-  }
-
-  const price = unit==='Quintal' ? currentPrices.pricePerQuintal : currentPrices.pricePerKg;
   pendingOrder = { 
     name, 
     phone, 
@@ -1167,9 +1181,9 @@ document.getElementById('orderForm').addEventListener('submit', function(e){
     city: city || 'Kalaburagi', 
     address: fullAddress, 
     quantity: qty, 
-    unit, 
+    unit: 'Kg', 
     notes, 
-    amount: qty*price 
+    amount: totalAmount 
   };
 
   document.getElementById('payAmountText').textContent = '₹' + Number(pendingOrder.amount).toLocaleString('en-IN');
